@@ -1,0 +1,145 @@
+.payment-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 100vh; */
+  }
+  
+  .payment-container .frame {
+    width: 600px;
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .payment-container .section {
+    margin-bottom: 30px;
+  }
+  
+  .payment-container .payment-options {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .payment-container .payment-option {
+    cursor: pointer;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  
+  .payment-container .payment-option:hover {
+    background-color: #eaeaea;
+  }
+  
+  .payment-container .payment-option.selected {
+    background-color: rgb(249, 153, 243);
+    color: #fff;
+  }
+  
+  .payment-container .pay-with-new-card {
+    padding: 10px;
+    background-color: rgb(249, 153, 243);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .payment-container .pay-with-new-card:hover {
+    background-color: #0056b3;
+  }
+  
+  .payment-container .cart-total {
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .payment-container .cart-total h2 {
+    text-align: center;
+  }
+  
+  .payment-container .cart-total-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .payment-container .place-order-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: rgb(249, 153, 243);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .payment-container .place-order-btn:hover {
+    background-color: rgb(245, 117, 230);
+  }
+  .payment-container .hr-line {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 10px 0;
+  }
+  
+  .payment-container .section .title {
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 50px;
+  }
+  
+  .payment-container .section input {
+    margin-bottom: 15px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #c5c5c5;
+    border-radius: 4px;
+    outline-color: rgb(249, 153, 243);
+  }
+  
+  .payment-container .section .multi-fields {
+    display: flex;
+    gap: 10px;
+  }
+  .payment-container .payment-container input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #c5c5c5;
+    border-radius: 4px;
+    outline-color:rgb(249, 153, 243);
+  }
+  
+  .payment-container .error-message {
+    color: red;
+    font-size: 14px;
+  }
+  .payment-container .section-heading {
+    margin-top: 10px;
+  }
+  
+  .payment-container .section-content {
+    margin-bottom: 10px;
+  }
+  .payment-container .save-card-btn{
+    background-color: rgb(249, 153, 243); /* Specify your desired pin color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .payment-container .save-card-btn:hover{
+    background-color: rgb(245, 117, 230);    
+  }

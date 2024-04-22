@@ -1,0 +1,243 @@
+/* SELLER MODULE START */
+
+/* Main container */
+.MainContainer {
+    height: 100vh; /* Make it full height of the viewport */
+    width: 100vw;
+    display: flex;
+  }
+  
+  /* Sidebar container */
+  .SideBarContainer {
+    flex: 0 0 20%; /* Set the sidebar to occupy 20% of the available space */
+    position: fixed;
+    padding: 20px;
+    overflow-y: auto;
+  
+  }
+  
+  .MainContentContainer {
+    flex: 1; /* Take up remaining space */
+    display: flex;
+    padding: 20px;
+    background-color: #F4F4F4;
+    overflow-y: auto;
+  }
+  
+  .pagetitle{
+    background-color: white;
+    height: 10%;
+    width: 76vw;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    max-height: 100%;
+    height: 100%;
+    background-image: linear-gradient(rgb(243, 231, 231) 80%,pink);
+    padding: 20px;
+  }
+  
+  .sidebar h1{
+    color: black;
+    font-size: 25px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .sidebar span{
+    color:black;
+    font-weight: 500;
+  }
+  
+  .sidebar ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .sidebar ul ul{
+    background-color: #fffaf7;
+  }
+  
+  .sidebar li{
+    margin-bottom: 5%;
+    color: black;
+    font-size: 15px;
+  }
+  
+  
+  .sidebar ul li a {
+    color: black; /* Set color to black */
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .sidebar .logo{
+    height: 100px;
+  }
+  
+  /* MyProduct Page */
+  .MyProduct img{
+    width: 200px;
+  }
+  
+  .MyProduct p{
+    margin-bottom: 10px;
+  }
+  
+  .MyProduct .form-input{
+    margin-bottom: 10px;
+    color: rgb(131, 131, 131);
+  }
+  
+  .product{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px;
+  }
+  
+  .product-detail{
+    margin-left: 40px;
+  }
+  
+  .product-detail button{
+    margin-right: 10px;
+  }
+  
+  .product-detail #btnDelete{
+    background-color: rgb(176, 0, 0);
+    color: #FFF5EE;
+  }
+  
+  /* Order */
+  .Order .ordertable{
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px;
+  }
+  
+  .Order table {
+    border-collapse: collapse; /* Collapse the borders into a single border */
+    border-spacing: 0; /* Ensure there's no spacing between cells */
+  }
+  
+  .Order td, .Order th{
+    padding: 10px;
+    border: 0.2px solid rgb(207, 207, 207);
+  }
+  
+  .Order button{
+    margin: 10px;
+  }
+  
+  /* AddProduct */
+  .AddProduct .form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+  }
+  
+  .AddProduct .form-input{
+    margin-bottom: 20px;
+  }
+  
+  .AddProduct input, .AddProduct textarea{
+    margin-left: 10px;
+  }
+  
+  .AddProduct .containerbtn{
+    display: flex;
+    flex-direction: row;
+  }
+  .AddProduct button{
+    margin-right: 10px;
+  }
+  
+  .AddProduct #btnCancel{
+    background-color: rgb(176, 0, 0);
+    color: #FFF5EE;
+  }
+  
+  
+  /* Finance */
+  .Finance .finance-summary1{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+  }
+  .Finance .finance-summary2{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .Finance .finance-sd{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    border-radius: 5px;
+    width: 150px;
+    height: 150px;
+    margin: 20px;
+  }
+  
+  .Finance .finance-sd p p{
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: blue;
+  }
+  
+  .finance-summary1 button{
+    width:150px;
+    margin: 0 auto;
+  }
+  
+  .Finance .finance-transactions{
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+  .finance-transactions table{
+    border-collapse: collapse;
+  }
+  .finance-transactions th,
+  .finance-transactions td {
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+  
+  /* Seller Chat */
+  .sellerchatcontainer {
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .chatcontent .formchatcontent2 {
+    border: solid #efeded;
+    border-radius: 25px;
+    height: 40px;
+    background-color: rgb(237, 226, 226);
+    width: 60%;
+    display: flex;
+    font-size: 1.5rem;
+    bottom: 20px;
+    position: fixed;
+  }
+  
+  /* SELLER MODULE END */
