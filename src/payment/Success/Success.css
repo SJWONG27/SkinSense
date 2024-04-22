@@ -1,0 +1,53 @@
+.success-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .success-container .success-frame {
+    background-color: #f2f2f2;
+    padding: 60px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .success-container .icon {
+    margin-bottom: 20px;
+  }
+  
+  .success-container .message {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .success-container .email-msg {
+    font-size: small;
+  }
+  
+  .success-container .description {
+    margin-top: 20px;
+    font-size: medium;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .success-container .continue-shopping {
+    margin-top: 20px;
+  }
+  
+  .success-container .continue-shopping-btn {
+    background-color: rgb(249, 153, 243);
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .success-container .continue-shopping-btn:hover {
+    background-color: rgb(245, 117, 230);
+  }
+  .success-container .email-address {
+    color: #f32a30;
+  }
