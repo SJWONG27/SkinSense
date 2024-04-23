@@ -98,6 +98,11 @@
     background-position: center;
     background-repeat: no-repeat;
   }
+
+  .chatcontent .send-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
   
   .chatcontent .upload-button {
     background-image: url('../assets/images/chat/upload.png');

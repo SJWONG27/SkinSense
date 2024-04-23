@@ -109,17 +109,21 @@ function ChatRoom({user}) {
 
   const sendMessage = (e) => {
     e.preventDefault();
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    // const currentTime = new Date().toLocaleTimeString();
 
     if (file) {
       const newMessage = {
         text: '',
         file: URL.createObjectURL(file), 
+        time: currentTime,
       };
       setMessages([...messages, newMessage]);
     } else if (formValue) {
       const newMessage = {
         text: formValue,
         file: null,
+        time: currentTime,
       };
       setMessages([...messages, newMessage]);
     }
@@ -161,6 +165,7 @@ function ChatMessage({ message }) {
     <div className="chatmessage">
       {message.text && <p>{message.text}</p>}
       {message.file && (<img src={message.file} className="uploaded-image" />)}
+      <div className="message-time">{message.time}</div>
     </div>
   )
 }
