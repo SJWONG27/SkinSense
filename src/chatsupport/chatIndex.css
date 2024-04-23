@@ -13,12 +13,15 @@
   }
   
   .chatcontent {
-    flex: 1; /* Occupy remaining space */
+    flex: 1; /*Occupy remaining space*/
     padding: 10px;
     background-color: #F4F4F4;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 140px);
   }
-  
+
   .chat-list-container .order-status-container {
     display: flex;
     align-items: center;
