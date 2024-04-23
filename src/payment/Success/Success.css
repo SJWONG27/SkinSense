@@ -36,7 +36,7 @@
   }
   
   .success-container .continue-shopping-btn {
-    background-color: rgb(249, 153, 243);
+    background-color: #4f0d1c;
     color: #fff;
     padding: 10px 20px;
     border: none;
@@ -46,7 +46,7 @@
   }
   
   .success-container .continue-shopping-btn:hover {
-    background-color: rgb(245, 117, 230);
+    background-color: #b92f54;
   }
   .success-container .email-address {
     color: #f32a30;

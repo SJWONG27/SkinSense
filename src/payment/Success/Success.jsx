@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { BsBagCheckFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
 import './Success.css';
 import confetti from 'canvas-confetti';

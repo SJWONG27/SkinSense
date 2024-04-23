@@ -20,7 +20,7 @@
     padding: 10px;
     border: 1px solid #c5c5c5;
     border-radius: 4px;
-    outline-color: rgb(229, 127, 207);
+    outline-color: #4f0d1c;
 }
 .place-order .place-order-left .multi-fields{
     display: flex;
@@ -33,7 +33,7 @@
 .place-order .cart-total button{
     border: none;
     color: white;
-    background-color: rgb(244, 160, 238);
+    background-color: #4f0d1c;
     width: 100%;
     padding: 12px 0px;
     border-radius: 4px;
@@ -82,24 +82,27 @@
 .place-order .cart-promocode-input button{
     width: max(10vw,200px);
     padding: 12px 5px;
-    background-color: rgb(249, 153, 243);
+    background-color: #4f0d1c;
     border: none;
     color: white;
     border-radius: 4px;
     cursor: pointer;
 }
+.place-order .cart-promocode-input button:hover{
+    background-color: #b92f54;
+}
 .place-order .proceed-to-payment-button {
     margin-top: 20px;
     border: none;
     color: white;
-    background-color: rgb(249, 153, 243);
+    background-color: #4f0d1c;
     width: 100%;
     padding: 12px 0px;
     border-radius: 4px;
     cursor: pointer;
 }
 .place-order .save-button {
-    background-color: rgb(249, 153, 243);
+    background-color: #4f0d1c;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -109,11 +112,11 @@
 }
 
 .place-order .save-button:hover {
-    background-color: rgb(245, 117, 230);
+    background-color: #b92f54;
 }
 
 .place-order .proceed-to-payment-button:hover {
-    background-color: rgb(245, 117, 230);
+    background-color: #b92f54;
 }
 .place-order .save-button-container {
     display: flex;
@@ -125,6 +128,13 @@
 }
 
 .place-order .success-message {
-    color: green; /* Adjust color as needed */
+    color: green;
 }
 
+.cart-total {
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  
