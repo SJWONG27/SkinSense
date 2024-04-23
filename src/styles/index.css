@@ -1,3 +1,6 @@
+*{
+  scroll-behavior: smooth;
+}
 .mainHomeContainer {
   height: 100vh; /* Make it full height of the viewport */
   width: 100vw;

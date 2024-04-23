@@ -36,13 +36,13 @@
   }
   
   .payment-container .payment-option.selected {
-    background-color: rgb(249, 153, 243);
+    background-color: #4f0d1c;
     color: #fff;
   }
   
   .payment-container .pay-with-new-card {
     padding: 10px;
-    background-color: rgb(249, 153, 243);
+    background-color: #4f0d1c;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -75,7 +75,7 @@
     display: block;
     width: 100%;
     padding: 10px;
-    background-color: rgb(249, 153, 243);
+    background-color: #4f0d1c;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -84,7 +84,7 @@
   }
   
   .payment-container .place-order-btn:hover {
-    background-color: rgb(245, 117, 230);
+    background-color: b92f54;
   }
   .payment-container .hr-line {
     border: none;
@@ -104,7 +104,7 @@
     padding: 10px;
     border: 1px solid #c5c5c5;
     border-radius: 4px;
-    outline-color: rgb(249, 153, 243);
+    outline-color: #4f0d1c;
   }
   
   .payment-container .section .multi-fields {
@@ -116,7 +116,7 @@
     padding: 10px;
     border: 1px solid #c5c5c5;
     border-radius: 4px;
-    outline-color:rgb(249, 153, 243);
+    outline-color:#4f0d1c;
   }
   
   .payment-container .error-message {
@@ -131,7 +131,7 @@
     margin-bottom: 10px;
   }
   .payment-container .save-card-btn{
-    background-color: rgb(249, 153, 243); /* Specify your desired pin color */
+    background-color: #4f0d1c; 
     color: white;
     border: none;
     padding: 10px 20px;
@@ -141,5 +141,5 @@
   }
 
   .payment-container .save-card-btn:hover{
-    background-color: rgb(245, 117, 230);    
+    background-color: #b92f54;    
   }
