@@ -145,7 +145,7 @@ function ChatRoom({user}) {
         {messages.map((msg, index) => (
           <ChatMessage key={index} message={msg} />
         ))}
-        {/* <span ref={dummy}></span> */}
+        <span ref={dummy}></span>
         <form className="formchatcontent" onSubmit={sendMessage}>
           <input value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="Type a message..." />
           <button type="submit" disabled={!formValue} className="send-button"> </button>

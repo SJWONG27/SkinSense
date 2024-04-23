@@ -90,7 +90,6 @@ const PlaceOrder = () => {
         localStorage.setItem('deliveryInfo', JSON.stringify(deliveryInfo));
         setIsSaved(true);
         setShowSuccessMessage(true); 
-        navigate('/transaction/payment');
     };
 
     const validateForm = () => {
