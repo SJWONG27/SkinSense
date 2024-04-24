@@ -1,8 +1,15 @@
 import React from 'react'
 import './Footer.css';
+import { useLocation } from "react-router-dom";
 
 const Footer = () => {
+    const location = useLocation();
+    const hideFooter = location.pathname === '/' || location.pathname === '/register';
+    if (hideFooter) {
+        return null; // Render nothing if the footer should be hidden
+      }
   return (
+    
     <div className='footer' id='footer'>
     <div className="footer-content">
         <div className="footer-content-left">
