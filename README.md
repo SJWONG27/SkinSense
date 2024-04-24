@@ -49,8 +49,6 @@ Despite the growing demand for skincare products, both sellers and buyers often 
 | 1   | General              | Register accounts         | To allow users to create account on the platform           | Tan Ke Ying       |
 |     |                      | Login accounts            | To enable registered users to sign in to their accounts securely | Tan Ke Ying   |
 |     |                      | Manage profile            | To allow users to update their personal information and preferences | Tan Ke Ying  |
-|     |                      | View and track order history | To provide users with a record of past orders and the ability to track current orders | Wong Soon Jit |
-|     |                      | Manage wishlist          | To let users save products they're interested in for future reference | Wong Soon Jit   |
 | 2   | Product Catalog      | Search and filter products| To allow users to find products quickly by searching and applying filters | Hor Ji Xuan |
 |     |                      | View products listings   | Displays a catalog of available products for users to browse | Hor Ji Xuan  |
 |     |                      | View product reviews and ratings | To allow users to leave feedback and ratings for products | Hor Ji Xuan |
@@ -60,8 +58,9 @@ Despite the growing demand for skincare products, both sellers and buyers often 
 |     |                      | Save card information    | To enable users to save card for future payment            | Eric Lee Chun Kiat |
 |     |                      | Save delivery information| To enable users to securely save their delivery information such as address and postcode | Eric Lee Chun Kiat |
 |     |                      | Apply coupons            | To allow users to apply discount coupons during checkout   | Eric Lee Chun Kiat |
-| 5   | Inventory Management| Track real-time inventory| To update inventory levels instantly to reflect stock availability | Wong Soon Jit |
+| 5   | Seller centre        | Manage order             | To allow seller to update the status of order | Wong Soon Jit |
 |     |                      | Manage and update inventory | To allow administrators to add, remove, or update product inventory | Wong Soon Jit |
+|     |                      | Manage finance           | To allow sellers to view and manage their total income, total withdrawal, balance left and transaction history as well. | Wong Soon Jit |
 | 6   | Chat Support         | Facilitate communication| To allow instant communication between buyers and sellers | Goh Yu Heng |
 |     |                      | Update order status      | To allow seller to notify the order status of the products | Goh Yu Heng |
 |     |                      | Share files and images   | To enable buyers and sellers to exchange files and images directly | Goh Yu Heng |
