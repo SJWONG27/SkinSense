@@ -36,7 +36,7 @@ const Success = () => {
 
     const handleContinueShopping = () => {
         // Navigate to the home page
-        navigate('/Home');
+        navigate('/products');
       };
 
     return (

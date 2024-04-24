@@ -1,6 +1,5 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Home from './Home'
 import Product from './Product';
 import ViewProduct from './ViewProduct';
 import SellerDashboard from '../seller/SellerDashboard';
@@ -18,8 +17,7 @@ function Buyer() {
         <NavBar/>
       </div>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/Home" element={<Home />} />
+        <Route path="/" element={<Product />} />
         <Route path="/products" element={<Product />} />
         <Route path="/viewProduct" element={<ViewProduct />} />
         <Route path="/chat" element={<Chat />} />
