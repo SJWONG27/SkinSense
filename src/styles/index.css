@@ -1,5 +1,5 @@
 *{
-  scroll-behavior: smooth;
+  scrollbar-width: none;
 }
 .mainHomeContainer {
   height: 100vh; /* Make it full height of the viewport */
@@ -7,13 +7,15 @@
   display: flex;
   flex-direction: column;
   background-image: linear-gradient(rgb(243, 231, 231) 80%,pink);
+  overflow-x: hidden;
 }
 
 .navBarContainer{
   display: flex;
   width: 100%;
   height: 80px;
-  position: fixed;
+  position: absolute;
+  z-index: 99;
 }
 
 .homeContainer{
