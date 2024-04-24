@@ -131,7 +131,9 @@ function ChatRoom({user}) {
     setFormValue('');
     setFile(null);
 
-    dummy.current.scrollIntoView({ behavior: 'smooth' });
+    // dummy.current.scrollIntoView({ behavior: 'smooth' });
+  const chatContent = document.querySelector('.chatcontent');
+  chatContent.scrollTop = chatContent.scrollHeight;
   };
 
   const handleFileUpload = () => {
