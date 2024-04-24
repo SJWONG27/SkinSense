@@ -4,6 +4,7 @@ import BuyerPage from './products/Buyer';
 import SellerDashboard from './seller/SellerDashboard';
 import Login from './general/Login';
 import Register from './general/Register';
+import Footer from './Footer/Footer';
 
 function App() {
   
@@ -16,6 +17,7 @@ function App() {
         <Route path='/sellerDashboard/*' element={<SellerDashboard />} />
         <Route path="/*" element={<BuyerPage />} />
       </Routes>
+      <Footer />
     </Router>
   )
 }
