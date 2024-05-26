@@ -4,6 +4,7 @@ import logo from '../assets/images/logo_skinsense.png';
 import { FaUser } from "react-icons/fa";
 import { FaLock } from 'react-icons/fa';
 import { Link , useNavigate} from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -21,10 +22,19 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    navigate('/buyerPage');
+    try {
+      const response = await axios.post('http://localhost:4000/login', formData);
+      if (response.status === 200) {
+        navigate('/buyerPage');
+      } else {
+        alert('Failed to sign in. Please try again.');
+      }
+    } catch (error) {
+        console.error('Error: ', error);
+        alert('An error occurred. Please try again later.');
+    }
   };
 
   return (

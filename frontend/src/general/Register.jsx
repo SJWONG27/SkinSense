@@ -5,6 +5,7 @@ import { FaUser } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import { FaLock } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import axios from "axios";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -23,10 +24,26 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    try {
+      const response = await axios.post('http://localhost:4000/signup', formData);
+      if (response.status === 201) {
+        alert('Account created successfully!');
+        window.location.href = '/';
+      } else {
+        alert('Failed to create account. Please try again.');
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 409) {
+        alert('Account already exists with this email.');
+      } else {
+        console.error('Error: ', error);
+        alert('An error occurred. Please try again later.');
+      }
+    }
   };
+  
 
   return (
     <div>

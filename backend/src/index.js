@@ -14,11 +14,6 @@ console.log('PORT:', process.env.PORT);
 console.log('MONGO_URI:', process.env.MONGO_URI);
 
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
-
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -32,13 +27,15 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-app.use(
-  cors({
-    origin: ['https://localhost:4000'],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: ['http://localhost:4000', 'http://localhost:5173'],
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     credentials: true,
+//   })
+// );
+
+app.use(cors());
 
 app.use(cookieParser());
 
