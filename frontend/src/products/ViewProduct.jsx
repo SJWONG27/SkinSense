@@ -102,7 +102,7 @@ function ViewProduct(){
         <img src={data.image1} alt="sss" width={400} height={400}/>
         <p className="product_name">{data.brand2}</p>
         <p className="product_description"><strong>Description</strong><br/>{data.description1}</p>
-        <p className="product_price">{data.price2}</p>
+        <p className="product_price">RM{data.price2}</p>
         <Button onClick={handleClick({ vertical: 'bottom', horizontal: 'right' })} variant="contained">Add to Cart</Button>
          
         <Snackbar
@@ -211,7 +211,7 @@ function ViewProduct(){
         <img src={data.image1} alt="sss" width={400} height={400}/>
         <p className="product_name">{data.brand2}</p>
         <p className="product_description"><strong>Description</strong><br/>{data.description1}</p>
-        <p className="product_price">{data.price2}</p>
+        <p className="product_price">RM{data.price2}</p>
         <Button onClick={handleClick({ vertical: 'bottom', horizontal: 'right' })} variant="contained">Add to Cart</Button>
          
         <Snackbar
@@ -321,7 +321,7 @@ function ViewProduct(){
         <img src={data.image1} alt="sss" width={400} height={400}/>
         <p className="product_name">{data.brand2}</p>
         <p className="product_description"><strong>Description</strong><br/>{data.description1}</p>
-        <p className="product_price">{data.price2}</p>
+        <p className="product_price">RM{data.price2}</p>
         <Button onClick={handleClick({ vertical: 'bottom', horizontal: 'right' })} variant="contained">Add to Cart</Button>
          
         <Snackbar
@@ -429,7 +429,7 @@ function ViewProduct(){
         <img src={data.image1} alt="sss" width={400} height={400}/>
         <p className="product_name">{data.brand2}</p>
         <p className="product_description"><strong>Description</strong><br/>{data.description1}</p>
-        <p className="product_price">{data.price2}</p>
+        <p className="product_price">RM{data.price2}</p>
         <Button onClick={handleClick({ vertical: 'bottom', horizontal: 'right' })} variant="contained">Add to Cart</Button>
          
         <Snackbar
