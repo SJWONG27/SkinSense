@@ -32,6 +32,22 @@ router.post("/upload", upload.single("avatar"), async (req, res) => {
       res.json({ message: 'New image added to the db!' });
   });
 
+  router.post("/uploadProfilePic", upload.single("profilePic"), async (req, res) => {
+    const userId = req.body.userId;
+    const profilePicPath = req.file.path.replace(/\\/g, "/"); // Convert to forward slashes
+  
+    try {
+      const user = await User.findByIdAndUpdate(userId, { profilePic: profilePicPath }, { new: true });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.status(200).json({ message: 'Profile picture updated successfully', user });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
   module.exports = router;
 
 

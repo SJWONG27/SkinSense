@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import defaultProfilePhoto from '../assets/images/img_avatar.jpeg'
+import defaultProfilePhoto from '../assets/images/img_avatar.jpeg';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from "react-cookie";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [cookies, removeCookie] = useCookies(['token']);
+  const [cookies, removeCookie] = useCookies([]);
   const [image, setImage] = useState(defaultProfilePhoto); 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -15,48 +17,74 @@ const Profile = () => {
   const [dateOfBirth, setDateOfBirth] = useState('');
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const { data } = await axios.get('http://localhost:4000/login', {
-          headers: {
-            Authorization: `Bearer ${cookies.token}`
-          }
-        });
-        setUsername(data.username);
-        setEmail(data.email);
-      } catch (error) {
-        console.error('Failed to fetch user data', error);
-        removeCookie("token");
-        navigate('/');
-      }
-    };
+    const verifyCookie = async () => {
+      
+      const {data} = await axios.post(
+        "http://localhost:4000/",
+        {},
+        {withCredentials: true}
+      );
 
-    if (cookies.token) {
-      fetchUserData();
-    } else {
-      navigate('/');
-    }
+      const {status, user, email} = data;
+      setUsername(user);
+      setEmail(email);
+      setPhoneNumber(user.phoneNumber);
+      setGender(user.gender);
+      setDateOfBirth(user.dateOfBirth);
+      setImage(user.profilePic || defaultProfilePhoto);
+      return status
+        ? toast(`Hello ${user}`, {
+          position:"top-right",
+        })
+        : (removeCookie("token"), navigate("/login"), console.log('meow'));
+      
+      };
+      verifyCookie();
   }, [cookies, navigate, removeCookie]);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         setImage(e.target.result);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSaveChanges = (e) => {
+  const handleSaveChanges = async (e) => {
     e.preventDefault();
-    alert('Changes saved!');
+
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('email', email);
+    formData.append('phoneNumber', phoneNumber);
+    formData.append('dateOfBirth', dateOfBirth);
+    formData.append('gender', gender);
+    const imageFile = document.getElementById('imageUpload').files[0];
+    if (imageFile) {
+      formData.append('profilePic', imageFile);
+    }
+
+    try {
+      await axios.put('http://localhost:4000/profile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${cookies.token}`
+        }
+      });
+      toast('Changes saved!', { type: 'success' });
+    } catch (error) {
+      console.error('Failed to update profile', error);
+      toast('Failed to update profile', { type: 'error' });
+    }
   };
+
 
   const handleLogout = () => {
     removeCookie("token");
-    navigate('/login');
+    navigate('/');
   };
 
   return (
@@ -69,7 +97,7 @@ const Profile = () => {
         </div>
       </div>
       <div className="form-container">
-        <form>
+        <form onSubmit={handleSaveChanges}>
           <div className="form-input">
             <label htmlFor="username">Username</label>
             <input type="text" name="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
@@ -104,11 +132,12 @@ const Profile = () => {
             </div>
           </div>
           <div className='submit-container'>
-            <button onClick={handleSaveChanges}>Save changes</button>
+            <button type="submit">Save changes</button>
           </div>
         </form>
         <button onClick={handleLogout}>Logout</button>
       </div>
+      <ToastContainer />
     </div>
   );
 };

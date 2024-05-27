@@ -16,7 +16,7 @@ function NavBar(){
                 <Link to="/shoppingcart" className='link'>
                     <ShoppingCart/>
                 </Link>
-                <Link to="/profile" className='link'>
+                <Link to="/profilePage" className='link'>
                     <Avatar photo={avatarUser} name={"Zhang LingHe"}/>
                 </Link>
             </div>

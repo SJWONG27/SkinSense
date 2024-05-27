@@ -5,36 +5,62 @@ import { FaUser } from "react-icons/fa";
 import { FaLock } from 'react-icons/fa';
 import { Link , useNavigate} from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer, toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
   });
 
-  const handleChange = (e) => {
-    const name = e.target.name;
-    const value = e.target.value
-    setFormData((prevData) => ({
-      ...prevData,
+  const { email, password } = formData;
+  
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
       [name]: value,
-    }));
+    });
   };
+
+  const handleError = (err) =>
+    toast.error(err, {
+      position: "bottom-left",
+    });
+  const handleSuccess = (msg) =>
+    toast.success(msg, {
+      position: "bottom-left",
+    });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:4000/login', formData);
-      if (response.status === 200) {
-        navigate('/buyerPage');
-      } else {
-        alert('Failed to sign in. Please try again.');
+      const {data} = await axios.post(
+        'http://localhost:4000/login', 
+        {
+          ...formData
+        }, 
+        { withCredentials: true }
+      );
+      console.log(data);
+      const { success , message } = data;
+      if(success){
+        handleSuccess(message);
+        setTimeout(() =>{
+          navigate("/buyerPage");
+        }, 1000);
+      }else{
+        handleError(message);
       }
     } catch (error) {
-        console.error('Error: ', error);
-        alert('An error occurred. Please try again later.');
+        console.log('Error: ', error);
     }
+    setFormData({
+      ...formData,
+      email: "",
+      password: "",
+    });
   };
 
   return (
@@ -52,11 +78,11 @@ const Login = () => {
                     <form onSubmit={handleSubmit}>
                     <div className="form-input">
                         <FaUser className="icon"/>
-                        <input type="text" name="username" placeholder="Username" value={formData.username} onChange={handleChange} required/>
+                        <input type="email" name="email" placeholder="Enter your email" value={email} onChange={handleOnChange} required/>
                     </div>
                     <div className="form-input">
                         <FaLock className="icon"/>
-                        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required/>
+                        <input type="password" name="password" placeholder="Enter your Password" value={password} onChange={handleOnChange} required/>
                     </div>
                     <div className="remember-forgot-password">
                         <label><input type="checkbox" />Remember Me</label>
@@ -67,6 +93,7 @@ const Login = () => {
                     </div>
                     <div className="sign-up">Don't Have an Account? <Link to="/register">Sign Up Here</Link></div>
                     </form>
+                    <ToastContainer/>
                 </div>
             </div>
         </div>

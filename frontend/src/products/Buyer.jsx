@@ -22,7 +22,7 @@ function Buyer() {
         <Route path="/viewProduct" element={<ViewProduct />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/shoppingcart" element={<ShoppingCart/>} />
-        <Route path="/profile" element={<Profile/>} />
+        <Route path="/profilePage" element={<Profile/>} />
         <Route path="/transaction/*" element={<Transaction/>} />
         <Route path="/sellerDashboard/*" element={<SellerDashboard />} />
       </Routes>

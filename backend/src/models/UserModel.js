@@ -19,6 +19,18 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: new Date(),
     },
+    phoneNumber:{
+        type: String,
+    },
+    dateOfBirth:{
+        type: Date,
+    },
+    gender:{
+        type: String,
+    },
+    profilePicture:{
+        type: String,
+    }
 });
 
 userSchema.pre("save", async function(){

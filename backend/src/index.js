@@ -29,18 +29,23 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
+app.use(
+  cors({
+    origin: ['http://localhost:5173'], 
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true, 
+  })
+);
 
-
-app.use(cors());
 
 app.use(cookieParser());
 
 app.use(express.json());
 
 app.use("/",authRoute);
-
 app.use("/image", imageRoute)
 app.use("/product", productRoute)
+app.use("/profilePic", require('./routes/ImageRoute'))
 
 
 
