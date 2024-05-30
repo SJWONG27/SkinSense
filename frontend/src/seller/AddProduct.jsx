@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 
 function AddProduct() {
@@ -8,6 +8,25 @@ function AddProduct() {
   const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [selectedFile, setSelectedFile] = useState(null);
+
+  const [sellerName, setSellerName] = useState("");
+  // to get the username, as known as seller name of the product
+  useEffect(()=>{ 
+    async function getUsername() {
+      const email = JSON.parse(localStorage.getItem('email'));
+      console.log(email)
+      const response = await fetch(`http://localhost:4000/user/${email}`);
+      if (!response.ok) {
+        const message = `An error occurred: ${response.statusText}`;
+        console.error(message);
+        return;
+      }
+      const result = await response.json();
+      setSellerName(result.username);
+  }
+  getUsername();
+  return;
+}, [])
   
 
   const handleFileChange = (event) => {
@@ -25,6 +44,7 @@ function AddProduct() {
       formData.append('description', description);
       formData.append('price', price);
       formData.append('quantity', quantity);
+      formData.append('sellername', sellerName);
 
       const response = await fetch('http://localhost:4000/image/upload', {
         method:"POST",

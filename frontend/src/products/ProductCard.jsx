@@ -3,21 +3,21 @@ import Rating from '@mui/material/Rating';
 
 import './product.css';
 
-function ProductCard({name, filter, price, description, imgsrc, brand, stars}){
+function ProductCard({index, name, filter, price, description, imgsrc, seller, stars}){
 
     // extract the path from database ../frontend/src/uploads/ to ../uploads/
     imgsrc = "..".concat(imgsrc.substring(15))
 
-    const dataToPass = { name2: name, price2: price , image1:getImgUrl(imgsrc), description1: description, brand2:brand, star2:stars};
+    const dataToPass = { index2: index, name2: name, price2: price , image1:getImgUrl(imgsrc), description1: description, seller2:seller, star2:stars};
     if(name.toLowerCase().includes(filter.toLowerCase()) ||filter==""){
         return (
             <div className="product_card">
                 <Rating className="product_stars" name="read-only" value={stars} sx={{color: "#300b14"}} readOnly size='small' />
-                <p className='product_category'>{name}</p>
+                <p className='product_category'>{seller}</p>
                 <img src={getImgUrl(imgsrc)} alt="image" width={100} height={130}/>
-                <p>{brand}</p>
+                <p>{name}</p>
                 <p>RM{price}</p>
-                <Link to="/viewProduct" state={dataToPass} className='view_product_btn'>View More</Link>
+                <Link to={`/products/${index}`} state={dataToPass} className='view_product_btn'>View More</Link>
             </div>
          );
     }

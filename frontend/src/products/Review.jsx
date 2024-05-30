@@ -1,10 +1,10 @@
 import Rating from '@mui/material/Rating';
 import './product.css';
 
-function Review({content, star, date}){
+function Review({username, content, star, date}){
     return(
         <div className="review_container">
-            <strong>Hor</strong><br/>
+            <strong>{username}</strong><br/>
             <p className='date'>{date}</p>
             <Rating name="read-only" value={star} readOnly /><br/>
             <p>{content}</p>

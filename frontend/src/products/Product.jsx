@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import ProductList from './ProductList';
 import { Select, MenuItem, InputLabel, FormControl} from '@mui/material';
 import "./product.css"
+import {useLocation} from 'react-router-dom'
+
 function Product() {
+
   const[input, setInput] = useState("");
   const[sort, setSort] = useState("");
   return (

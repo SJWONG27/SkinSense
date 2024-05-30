@@ -1,5 +1,6 @@
 import { useLocation, useNavigate} from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import Rating from '@mui/material/Rating';
 import Review from "./Review";
 import { Button } from "@mui/material";
@@ -14,8 +15,43 @@ import Alert from '@mui/material/Alert';
 import { Select, MenuItem, InputLabel, FormControl} from '@mui/material';
 import './product.css';
 
-
 function ViewProduct(){
+  
+  const params = useParams();
+  const [username, setUsername] = useState("");
+  const [comments, setComments] = useState([]);
+  // This method fetches the product comments from the database.
+  useEffect(() => {
+    async function getComments() {
+      const response = await fetch(`http://localhost:4000/product/comments/${params.id.toString()}`);
+      if (!response.ok) {
+        const message = `An error occurred: ${response.statusText}`;
+        console.error(message);
+        return;
+      }
+      const result = await response.json();
+      setComments(result.comments);
+    }
+    getComments();
+    return;
+  }, [comments.length]);
+
+  useEffect(()=>{ 
+    async function getUsername() {
+      const email = JSON.parse(localStorage.getItem('email'));
+      const response = await fetch(`http://localhost:4000/user/${email}`);
+      if (!response.ok) {
+        const message = `An error occurred: ${response.statusText}`;
+        console.error(message);
+        return;
+      }
+      const result = await response.json();
+      setUsername(result.username);
+  }
+  getUsername();
+  return;
+}, [])
+
   const [state, setState] = useState({
     open: false,
     vertical: 'top',
@@ -66,6 +102,28 @@ function ViewProduct(){
     const handleReviewSnackbarClose = () => {
       setReviewSnackbar(false);
     };
+
+    async function addCommentsFunc() {
+        const response = await fetch(`http://localhost:4000/product/comments/${params.id.toString()}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+              username: username,
+              star: star,
+              content: review
+          })
+    
+        });
+        //console.log(response)
+        if (!response.ok) {
+          const message = `An error occurred: ${response.statusText}`;
+          console.error(message);
+          return;
+        }
+
+  }
   
   
     const handleSubmit = (event) => {
@@ -77,6 +135,7 @@ function ViewProduct(){
         return;
       }
       const newReview = {
+        username: username,
         star: star,
         content: review,
         date: currentDate
@@ -87,11 +146,15 @@ function ViewProduct(){
       setReview(""); 
       setStar(0);
       setOpenDialog(false); // Close the dialog after submission
+      addCommentsFunc();
     };
+    
+
+  
     
     // ascending review list
     if(sort=="star-asc"){
-      const tempReviews = [...submittedReviews]
+      const tempReviews = [...comments]
       const sortedReviews = sortReviewsByStarAsc(tempReviews); // Sort before rendering
 
       return (
@@ -100,7 +163,7 @@ function ViewProduct(){
         <div className="view_product_page">
         <br/><br/><br/><br/>
         <img src={data.image1} alt="sss" width={400} height={400}/>
-        <p className="product_name">{data.brand2}</p>
+        <p className="product_name">{data.name2}</p>
         <p className="product_description"><strong>Description</strong><br/>{data.description1}</p>
         <p className="product_price">RM{data.price2}</p>
         <Button onClick={handleClick({ vertical: 'bottom', horizontal: 'right' })} variant="contained">Add to Cart</Button>
@@ -144,7 +207,7 @@ function ViewProduct(){
           </Alert>
         </Snackbar>
 
-        <br/><br/><br/><br/><hr className="review_separator_line"/>
+        <br/><br/><br/><br/><br/><br/><br/><br/><hr className="review_separator_line"/>
           <div className="review_section">
             <h2>Review 
               <FormControl className="sort_review_field" sx={{ m: 1, minWidth: 190}} size="small" >
@@ -191,7 +254,7 @@ function ViewProduct(){
               </div>
               </h2>
               {sortedReviews.map((review) => (
-              <Review content={review.content} star={review.star} date={review.date}/>
+              <Review key={review.date} username={review.username}  content={review.content} star={review.star} date={review.date.slice(0,10)}/>
                ))}
           </div>
         </div>
@@ -201,7 +264,7 @@ function ViewProduct(){
 
     // descending review list
     else if(sort=="star-desc"){
-      const tempReviews = [...submittedReviews]
+      const tempReviews = [...comments]
       const sortedReviews = sortReviewsByStarDesc(tempReviews); // Sort before rendering
       return (
         <>
@@ -209,7 +272,7 @@ function ViewProduct(){
         <div className="view_product_page">
         <br/><br/><br/><br/>
         <img src={data.image1} alt="sss" width={400} height={400}/>
-        <p className="product_name">{data.brand2}</p>
+        <p className="product_name">{data.name2}</p>
         <p className="product_description"><strong>Description</strong><br/>{data.description1}</p>
         <p className="product_price">RM{data.price2}</p>
         <Button onClick={handleClick({ vertical: 'bottom', horizontal: 'right' })} variant="contained">Add to Cart</Button>
@@ -253,7 +316,7 @@ function ViewProduct(){
           </Alert>
         </Snackbar>
 
-        <br/><br/><br/><br/><hr className="review_separator_line"/>
+        <br/><br/><br/><br/><br/><br/><br/><br/><hr className="review_separator_line"/>
           <div className="review_section">
             <h2>Review 
               <FormControl className="sort_review_field" sx={{ m: 1, minWidth: 190}} size="small" >
@@ -301,7 +364,7 @@ function ViewProduct(){
               </div>
               </h2>
               {sortedReviews.map((review) => (
-              <Review content={review.content} star={review.star} date={review.date}/>
+              <Review key={review.date} username={review.username} content={review.content} star={review.star} date={review.date.slice(0,10)}/>
                ))}
           </div>
         </div>
@@ -311,7 +374,7 @@ function ViewProduct(){
 
      // from latest to oldest date
      else if(sort=="date-desc"){
-      const tempReviews = [...submittedReviews]
+      const tempReviews = [...comments]
       const sortedReviews = sortReviewsByDateDesc(tempReviews); // Sort before rendering
       return (
         <>
@@ -319,7 +382,7 @@ function ViewProduct(){
         <div className="view_product_page">
         <br/><br/><br/><br/>
         <img src={data.image1} alt="sss" width={400} height={400}/>
-        <p className="product_name">{data.brand2}</p>
+        <p className="product_name">{data.name2}</p>
         <p className="product_description"><strong>Description</strong><br/>{data.description1}</p>
         <p className="product_price">RM{data.price2}</p>
         <Button onClick={handleClick({ vertical: 'bottom', horizontal: 'right' })} variant="contained">Add to Cart</Button>
@@ -363,7 +426,7 @@ function ViewProduct(){
           </Alert>
         </Snackbar>
 
-        <br/><br/><br/><br/><hr className="review_separator_line"/>
+        <br/><br/><br/><br/><br/><br/><br/><br/><hr className="review_separator_line"/>
           <div className="review_section">
             <h2>Review 
               <FormControl className="sort_review_field" sx={{ m: 1, minWidth: 190}} size="small" >
@@ -411,7 +474,7 @@ function ViewProduct(){
               </div>
               </h2>
               {sortedReviews.map((review) => (
-              <Review content={review.content} star={review.star} date={review.date}/>
+              <Review key={review.date} username={review.username}  content={review.content} star={review.star} date={review.date.slice(0,10)}/>
                ))}
           </div>
         </div>
@@ -427,7 +490,7 @@ function ViewProduct(){
         <div className="view_product_page">
         <br/><br/><br/><br/>
         <img src={data.image1} alt="sss" width={400} height={400}/>
-        <p className="product_name">{data.brand2}</p>
+        <p className="product_name">{data.name2}</p>
         <p className="product_description"><strong>Description</strong><br/>{data.description1}</p>
         <p className="product_price">RM{data.price2}</p>
         <Button onClick={handleClick({ vertical: 'bottom', horizontal: 'right' })} variant="contained">Add to Cart</Button>
@@ -471,7 +534,7 @@ function ViewProduct(){
           </Alert>
         </Snackbar>
 
-        <br/><br/><br/><br/><hr className="review_separator_line"/>
+        <br/><br/><br/><br/><br/><br/><br/><br/><hr className="review_separator_line"/>
         <div className="review_section">
             <h2>Review 
               <FormControl className="sort_review_field" sx={{ m: 1, minWidth: 190}} size="small" >
@@ -519,8 +582,11 @@ function ViewProduct(){
               </div>
               </h2>
               {submittedReviews.map((review) => (
-              <Review content={review.content} star={review.star} date={review.date} />
+              <Review key={review.date} username={review.username} content={review.content} star={review.star} date={review.date} />
                ))}
+            {comments.length>0 && comments.map((review) => (
+                <Review key={review.date} username={review.username} content={review.content} star={review.star} date={review.date.slice(0,10)} />
+              ))}
           </div>
 
         </div>
@@ -550,10 +616,8 @@ function ViewProduct(){
 
       function sortReviewsByDateDesc(review) {
         return review.sort((reviewA, reviewB) => {
-          var dateA = reviewA.date;
-          var dateB = reviewB.date;
-          dateA = dateA.split('/').reverse().join('');
-          dateB = dateB.split('/').reverse().join('');
+          const dateA = new Date(reviewA.date); // Convert to Date object
+          const dateB = new Date(reviewB.date);
           return dateB - dateA; // Descending order (latest to oldest)
         });
       }
@@ -568,7 +632,7 @@ function ViewProduct(){
         
         const year = today.getFullYear();
         const date = today.getDate();
-        return `${date}/${month}/${year}`;
+        return `${year}-${month}-${date}`;
       }
 }
 

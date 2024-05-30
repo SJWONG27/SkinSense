@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const authRoute = require("./routes/AuthRoute");
 const imageRoute = require("./routes/ImageRoute");
 const productRoute = require("./routes/ProductRoute");
+const userRoute = require("./routes/UserRoute");
 const { MONGO_URI, PORT } = process.env;
 
 
@@ -32,7 +33,7 @@ app.listen(PORT, () => {
 app.use(
   cors({
     origin: ['http://localhost:5173'], 
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE","PATCH"],
     credentials: true, 
   })
 );
@@ -45,6 +46,7 @@ app.use(express.json());
 app.use("/",authRoute);
 app.use("/image", imageRoute)
 app.use("/product", productRoute)
+app.use("/user", userRoute)
 app.use("/profilePic", require('./routes/ImageRoute'))
 
 

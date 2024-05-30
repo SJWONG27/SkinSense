@@ -22,11 +22,16 @@ router.post("/upload", upload.single("avatar"), async (req, res) => {
       const imagePath = req.file.path; // Get the path from Multer
       const actualPath = imagePath.replace(/\\/g, "/");  // change the backslash path (default Multer path) to forward slash
       
-      const product = new Product({name: req.body.name,
-        description: req.body.description,
-        price: req.body.price,
-        quantity: req.body.quantity,
-        img: actualPath})
+      const product = new Product(
+        {
+          name: req.body.name,
+          description: req.body.description,
+          price: req.body.price,
+          quantity: req.body.quantity,
+          img: actualPath,
+          sellername:req.body.sellername
+        }
+      )
       
       await product.save()
       res.json({ message: 'New image added to the db!' });

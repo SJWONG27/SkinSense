@@ -47,6 +47,7 @@ const Login = () => {
       const { success , message } = data;
       if(success){
         handleSuccess(message);
+        localStorage.setItem("email", JSON.stringify(email))    // store the currently logged-in email 
         setTimeout(() =>{
           navigate("/buyerPage");
         }, 1000);

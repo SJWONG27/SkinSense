@@ -19,7 +19,7 @@ function Buyer() {
       <Routes>
         <Route path="/" element={<Product />} />
         <Route path="/products" element={<Product />} />
-        <Route path="/viewProduct" element={<ViewProduct />} />
+        <Route path="/products/:id" element={<ViewProduct />}/>
         <Route path="/chat" element={<Chat />} />
         <Route path="/shoppingcart" element={<ShoppingCart/>} />
         <Route path="/profilePage" element={<Profile/>} />

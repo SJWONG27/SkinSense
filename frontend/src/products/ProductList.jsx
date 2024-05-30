@@ -51,7 +51,7 @@ const [records, setRecords] = useState([]);
       return (
         <div>
           {sortedProducts.map((product) => (
-            <ProductCard name={product.name} filter={filter} price={product.price} description={product.description} imgsrc={product.img} brand={product.name} stars={product.stars}/> // Spread product data to ProductCard
+            <ProductCard key={product._id} index={product._id.toString()} name={product.name} filter={filter} price={product.price} description={product.description} imgsrc={product.img} seller={product.sellername} stars={product.stars}/> // Spread product data to ProductCard
           ))}
         </div>
       );
@@ -63,7 +63,7 @@ const [records, setRecords] = useState([]);
       return (
         <div>
           {sortedProducts.map((product) => (
-            <ProductCard name={product.name} filter={filter} price={product.price} description={product.description} imgsrc={product.img} brand={product.name} stars={product.stars}/> // Spread product data to ProductCard
+            <ProductCard key={product._id} index={product._id.toString()} name={product.name} filter={filter} price={product.price} description={product.description} imgsrc={product.img} seller={product.sellername} stars={product.stars}/> // Spread product data to ProductCard
           ))}
         </div>
       );
@@ -75,7 +75,7 @@ const [records, setRecords] = useState([]);
     return (
       <div>
         {sortedProducts.map((product) => (
-          <ProductCard name={product.name} filter={filter} price={product.price} description={product.description} imgsrc={product.img} brand={product.name} stars={product.stars}/> // Spread product data to ProductCard
+          <ProductCard key={product._id} index={product._id.toString()} name={product.name} filter={filter} price={product.price} description={product.description} imgsrc={product.img} seller={product.sellername} stars={product.stars}/> // Spread product data to ProductCard
         ))}
       </div>
     );
@@ -87,7 +87,7 @@ const [records, setRecords] = useState([]);
   return (
     <div>
       {sortedProducts.map((product) => (
-        <ProductCard name={product.name} filter={filter} {...product} imgsrc={product.img} brand={product.name} stars={product.stars}/> // Spread product data to ProductCard
+        <ProductCard key={product._id} index={product._id.toString()} name={product.name} filter={filter} {...product} imgsrc={product.img} seller={product.sellername} stars={product.stars}/> // Spread product data to ProductCard
       ))}
     </div>
   );
@@ -97,7 +97,7 @@ const [records, setRecords] = useState([]);
       return (
       <div>
          {records.map((product) => ( 
-          <ProductCard key={product._id} name={product.name} filter={filter} {...product} imgsrc={product.img} brand={product.name} stars={product.stars}/> // Spread product data to ProductCard
+          <ProductCard key={product._id} index={product._id.toString()} name={product.name} filter={filter} {...product} imgsrc={product.img} seller={product.sellername} stars={product.stars}/> // Spread product data to ProductCard
         ))}
       </div>
     );
