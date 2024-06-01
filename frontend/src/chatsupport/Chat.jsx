@@ -231,8 +231,8 @@ function ChatMessage({ message, currentUser }) {
 
   return (
     <div className={`chatmessage ${messageClass}`}>
-      {message.content && <p>{message.content}</p>}
-      {message.file && (<img src={message.file} className="uploaded-image" />)}
+      {message.content && !message.file && <p>{message.content}</p>}
+      {message.file && (<img src={message.file} className={`uploaded-image ${message.senderName === currentUser ? 'sent-image' : 'received-image'}`}/>)}
       <div className="message-time">{message.timestamp}</div>
     </div>
   )
