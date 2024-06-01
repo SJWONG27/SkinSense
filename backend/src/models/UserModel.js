@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
     gender:{
         type: String,
     },
-    profilePicture:{
+    profilePic:{
         type: String,
     }
 });

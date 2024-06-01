@@ -10,4 +10,5 @@ router.get("/:email", async (req, res) => {
   res.send(results).status(200);
 });
 
+
 module.exports = router;

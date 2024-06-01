@@ -11,6 +11,7 @@ const imageRoute = require("./routes/ImageRoute");
 const productRoute = require("./routes/ProductRoute");
 const userRoute = require("./routes/UserRoute");
 const messageRoute = require("./routes/MessageRoute")
+const profileRoute = require("./routes/ProfileRoute")
 const { MONGO_URI, PORT } = process.env;
 
 
@@ -46,9 +47,9 @@ app.use(express.json());
 
 app.use("/",authRoute);
 app.use("/image", imageRoute)
+app.use('/uploads', profileRoute);
 app.use("/product", productRoute)
 app.use("/user", userRoute)
-app.use("/profilePic", require('./routes/ImageRoute'))
 app.use("/chat", messageRoute)
 
 

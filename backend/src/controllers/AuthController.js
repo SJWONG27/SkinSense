@@ -13,14 +13,15 @@ module.exports.Signup = async (req, res, next) => {
     const token = createSecretToken(user._id);
     res.cookie("token", token, {
       withCredentials: true,
-      httpOnly: false,
+      httpOnly: true, // Make it secure
     });
     res
       .status(201)
-      .json({ message: "User signed in successfully", success: true, user });
+      .json({ message: "User signed in successfully", success: true, user, token });
     next();
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -34,38 +35,42 @@ module.exports.Login = async (req, res, next) => {
     if(!user){
       return res.json({message:'Incorrect password or email' }) 
     }
-    const auth = await bcrypt.compare(password,user.password)
+    const auth = await bcrypt.compare(password, user.password);
     if (!auth) {
       return res.json({message:'Incorrect password or email' }) 
     }
      const token = createSecretToken(user._id);
      res.cookie("token", token, {
        withCredentials: true,
-       httpOnly: false,
+       httpOnly: true, // Make it secure
+       expires: new Date(Date.now() + 7*24*60*60*1000) ,
      });
-     res.status(201).json({ message: "User logged in successfully", success: true });
+     res.status(201).json({ message: "User logged in successfully", success: true, token, user });
      next()
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 }
 
 module.exports.updateProfile = async (req, res) => {
   try {
-      const { email, username, phoneNumber, gender, dateOfBirth, profilePic } = req.body;
-      const userId = req.userId; // Assume userId is set in userVerification middleware
-      const updatedData = { email, username, phoneNumber, gender, dateOfBirth, profilePic };
+    const { email, username, phoneNumber, gender, dateOfBirth } = req.body;
+    const userId = req.userId; // Get userId from middleware
+    const updatedData = { email, username, phoneNumber, gender, dateOfBirth };
 
-      const user = await User.findByIdAndUpdate(userId, updatedData, { new: true });
-      if (!user) {
-          return res.status(404).json({ message: "User not found" });
-      }
+    if (req.file) {
+      updatedData.profilePic = req.file.path.replace(/\\/g, "/"); // Handle profile picture update
+    }
 
-      res.status(200).json({ message: "Profile updated successfully", user });
+    const user = await User.findByIdAndUpdate(userId, updatedData, { new: true });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "Profile updated successfully", user });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error" });
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
-
-

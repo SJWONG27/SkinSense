@@ -44,9 +44,10 @@ const Login = () => {
         { withCredentials: true }
       );
       console.log(data);
-      const { success , message } = data;
+      const { success , message, token, user } = data;
       if(success){
         handleSuccess(message);
+        document.cookie = `token=${token}; path=/; Secure; HttpOnly`; 
         localStorage.setItem("email", JSON.stringify(email))    // store the currently logged-in email 
         setTimeout(() =>{
           navigate("/buyerPage");
@@ -56,6 +57,7 @@ const Login = () => {
       }
     } catch (error) {
         console.log('Error: ', error);
+        handleError("Login failed, please try again.");
     }
     setFormData({
       ...formData,

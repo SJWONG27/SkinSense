@@ -15,36 +15,64 @@ const Profile = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [gender, setGender] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
+  const [userId, setUserId] = useState(''); 
+
+  const formatDate = (date) => {
+    const d = new Date(date);
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    const year = d.getFullYear();
+  
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+  
+    return [year, month, day].join('-');
+  }
 
   useEffect(() => {
     const verifyCookie = async () => {
-      
-      const {data} = await axios.post(
-        "http://localhost:4000/",
-        {},
-        {withCredentials: true}
-      );
-
-      const {status, user, email} = data;
-      setUsername(user);
-      setEmail(email);
-      setPhoneNumber(user.phoneNumber);
-      setGender(user.gender);
-      setDateOfBirth(user.dateOfBirth);
-      setImage(user.profilePic || defaultProfilePhoto);
-      return status
-        ? toast(`Hello ${user}`, {
-          position:"top-right",
-        })
-        : (removeCookie("token"), navigate("/login"), console.log('meow'));
-      
-      };
-      verifyCookie();
-  }, [cookies, navigate, removeCookie]);
+      console.log('Cookie:', cookies.token); 
+      try {
+        const response = await axios.post(
+          "http://localhost:4000/",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${cookies.token}`
+            },
+            withCredentials: true
+          }
+        );
+  
+        const { status, user } = response.data;
+        console.log(response.data);
+        if (status) {
+          setUsername(user.username);
+          setEmail(user.email);
+          setPhoneNumber(user.phoneNumber);
+          setGender(user.gender);
+          setDateOfBirth(formatDate(user.dateOfBirth));
+          setImage(user.profilePic ? getImgUrl(user.profilePic) : defaultProfilePhoto);
+          setUserId(user._id);
+          toast(`Hello ${user.username}`, { position: "top-right" });
+        } else {
+          removeCookie("token");
+          navigate("/login");
+          console.log('User verification failed');
+        }
+      } catch (error) {
+        console.error('Verification error', error);
+        navigate("/login");
+      }
+    };
+    verifyCookie();
+  }, [cookies, navigate, removeCookie]);  
+  
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      console.log('Selected file:', file); // Log the selected file
       const reader = new FileReader();
       reader.onload = function (e) {
         setImage(e.target.result);
@@ -55,37 +83,53 @@ const Profile = () => {
 
   const handleSaveChanges = async (e) => {
     e.preventDefault();
-
+  
     const formData = new FormData();
     formData.append('username', username);
     formData.append('email', email);
     formData.append('phoneNumber', phoneNumber);
     formData.append('dateOfBirth', dateOfBirth);
     formData.append('gender', gender);
+    formData.append('userId', userId); // Add userId to formData
+
     const imageFile = document.getElementById('imageUpload').files[0];
     if (imageFile) {
+      console.log('Appending file to form data:', imageFile); // Log the file being appended
       formData.append('profilePic', imageFile);
     }
-
+  
     try {
-      await axios.put('http://localhost:4000/profile', formData, {
+      const response = await axios.put(`http://localhost:4000/profile/${userId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${cookies.token}`
-        }
+        },
+        withCredentials: true
       });
-      toast('Changes saved!', { type: 'success' });
+      console.log('Server response:', response);
+      
+      if (response.status === 200) {
+        toast('Changes saved!', { type: 'success' });
+        setImage(response.data.user.profilePic ? getImgUrl(response.data.user.profilePic) : defaultProfilePhoto); // Update profile picture using getImgUrl
+      } else {
+        toast('Failed to update profile', { type: 'error' });
+      }
     } catch (error) {
       console.error('Failed to update profile', error);
       toast('Failed to update profile', { type: 'error' });
     }
-  };
-
+  };  
+  
 
   const handleLogout = () => {
     removeCookie("token");
     navigate('/');
   };
+
+  // Function to get the URL and pass to "src" attribute in <img> tag
+  const getImgUrl = (imgPath) => {
+    return new URL(`../${imgPath.substring(15)}`, import.meta.url).href;
+  }
 
   return (
     <div className="profile-form">
