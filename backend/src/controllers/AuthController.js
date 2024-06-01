@@ -13,15 +13,14 @@ module.exports.Signup = async (req, res, next) => {
     const token = createSecretToken(user._id);
     res.cookie("token", token, {
       withCredentials: true,
-      httpOnly: true, // Make it secure
+      httpOnly: false,
     });
     res
       .status(201)
-      .json({ message: "User signed in successfully", success: true, user, token });
+      .json({ message: "User signed in successfully", success: true, user });
     next();
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -33,23 +32,21 @@ module.exports.Login = async (req, res, next) => {
     }
     const user = await User.findOne({ email });
     if(!user){
-      return res.json({message:'Incorrect password or email' }) 
+      return res.json({message:'Invalid account' }) 
     }
-    const auth = await bcrypt.compare(password, user.password);
+    const auth = await bcrypt.compare(password,user.password)
     if (!auth) {
       return res.json({message:'Incorrect password or email' }) 
     }
      const token = createSecretToken(user._id);
      res.cookie("token", token, {
        withCredentials: true,
-       httpOnly: true, // Make it secure
-       expires: new Date(Date.now() + 7*24*60*60*1000) ,
+       httpOnly: false,
      });
-     res.status(201).json({ message: "User logged in successfully", success: true, token, user });
+     res.status(201).json({ message: "User logged in successfully", success: true });
      next()
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
   }
 }
 
@@ -60,17 +57,19 @@ module.exports.updateProfile = async (req, res) => {
     const updatedData = { email, username, phoneNumber, gender, dateOfBirth };
 
     if (req.file) {
-      updatedData.profilePic = req.file.path.replace(/\\/g, "/"); // Handle profile picture update
+      updatedData.profilePic = req.file.path.replace(/\\/g, "/"); 
     }
-
+    delete updatedData.password;
     const user = await User.findByIdAndUpdate(userId, updatedData, { new: true });
     if (!user) {
+      console.log('User not found:', userId);
       return res.status(404).json({ message: "User not found" });
     }
 
+    console.log('Profile updated successfully:', user);
     res.status(200).json({ message: "Profile updated successfully", user });
   } catch (error) {
-    console.error(error);
+    console.error('Update profile error:', error);
     res.status(500).json({ message: "Server error" });
   }
 };

@@ -47,7 +47,7 @@ const Login = () => {
       const { success , message, token, user } = data;
       if(success){
         handleSuccess(message);
-        document.cookie = `token=${token}; path=/; Secure; HttpOnly`; 
+        document.cookie = `token=${token}; path=/; HttpOnly`; 
         localStorage.setItem("email", JSON.stringify(email))    // store the currently logged-in email 
         setTimeout(() =>{
           navigate("/buyerPage");

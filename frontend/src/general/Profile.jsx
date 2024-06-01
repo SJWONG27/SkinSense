@@ -9,13 +9,13 @@ import "react-toastify/dist/ReactToastify.css";
 const Profile = () => {
   const navigate = useNavigate();
   const [cookies, removeCookie] = useCookies([]);
-  const [image, setImage] = useState(defaultProfilePhoto); 
+  const [image, setImage] = useState(defaultProfilePhoto);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [gender, setGender] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
-  const [userId, setUserId] = useState(''); 
+  const [userId, setUserId] = useState('');
 
   const formatDate = (date) => {
     const d = new Date(date);
@@ -27,11 +27,11 @@ const Profile = () => {
     if (day.length < 2) day = '0' + day;
   
     return [year, month, day].join('-');
-  }
+  };
 
   useEffect(() => {
     const verifyCookie = async () => {
-      console.log('Cookie:', cookies.token); 
+      console.log('Cookie:', cookies.token);
       try {
         const response = await axios.post(
           "http://localhost:4000/",
@@ -57,17 +57,17 @@ const Profile = () => {
           toast(`Hello ${user.username}`, { position: "top-right" });
         } else {
           removeCookie("token");
-          navigate("/login");
+          navigate("/");
           console.log('User verification failed');
         }
       } catch (error) {
         console.error('Verification error', error);
-        navigate("/login");
+        navigate("/");
+        removeCookie("token");
       }
     };
     verifyCookie();
-  }, [cookies, navigate, removeCookie]);  
-  
+  }, [cookies, navigate, removeCookie]);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -118,8 +118,7 @@ const Profile = () => {
       console.error('Failed to update profile', error);
       toast('Failed to update profile', { type: 'error' });
     }
-  };  
-  
+  };
 
   const handleLogout = () => {
     removeCookie("token");
@@ -128,7 +127,8 @@ const Profile = () => {
 
   // Function to get the URL and pass to "src" attribute in <img> tag
   const getImgUrl = (imgPath) => {
-    return new URL(`../${imgPath.substring(15)}`, import.meta.url).href;
+    const adjustedPath = imgPath.replace('/frontend/src/uploads/', '/src/uploads/');
+    return `/${adjustedPath}`;
   }
 
   return (
