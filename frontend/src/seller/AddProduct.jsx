@@ -8,23 +8,15 @@ function AddProduct() {
   const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [sellerID, setSellerID] = useState("");
 
-  const [sellerName, setSellerName] = useState("");
-  // to get the username, as known as seller name of the product
+  // to get the user ID, to trace seller name of product
   useEffect(()=>{ 
-    async function getUsername() {
-      const email = JSON.parse(localStorage.getItem('email'));
-      console.log(email)
-      const response = await fetch(`http://localhost:4000/user/${email}`);
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`;
-        console.error(message);
-        return;
-      }
-      const result = await response.json();
-      setSellerName(result.username);
+    async function getUserID() {
+      const id = JSON.parse(localStorage.getItem('id'));
+      setSellerID(id);
   }
-  getUsername();
+  getUserID();
   return;
 }, [])
   
@@ -44,7 +36,7 @@ function AddProduct() {
       formData.append('description', description);
       formData.append('price', price);
       formData.append('quantity', quantity);
-      formData.append('sellername', sellerName);
+      formData.append('sellerID', sellerID);
 
       const response = await fetch('http://localhost:4000/image/upload', {
         method:"POST",

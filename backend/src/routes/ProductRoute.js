@@ -10,14 +10,19 @@ router.get("/", async (req, res) => {
   res.send(results).status(200);
 });
 
-// // This section will help you get a single record by id
-// router.get("/:id", async (req, res) => {
-//   const query = { _id: new ObjectId(req.params.id) };
-//   const result = await Product.findOne(query);
+// This section update Product stars based on comments
+router.patch("/:id", async (req, res)=>{
+  try{
+    const updates = {$set: {stars:req.body.star}}
+    const results = await Product.findByIdAndUpdate(req.params.id, updates)
+    res.send(results).status(200);
+  }
+  catch (err) {
+    console.error(err);
+    res.status(500).send("Error updating record");
+  }
+})
 
-//   if (!result) res.send("Not found").status(404);
-//   else res.send(result).status(200);
-// });
 
 
 // This section will help you get a list of all the comments of a product.
@@ -35,10 +40,11 @@ router.patch("/comments/:id", async (req, res) => {
       {$push:
         {"comments":
             {   
-                username: req.body.username,
+                userID: req.body.userID,
                 star: Number(req.body.star),
                 content: req.body.content,
-                date: new Date(Date.now())
+                date: new Date(Date.now()),
+                username: ""
             }
         }
       };

@@ -1,15 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from './ProductCard'; 
-import cleanser from '../assets/images/cleanser.png'
-import lotion from '../assets/images/lotion.png'
-import toner from '../assets/images/toner.png'
-import mois from '../assets/images/mois.png'
-import cleanser2 from '../assets/images/cleanser2.jpg'
 import './product.css';
 
 function ProductList({filter, sort}){
 
-const [records, setRecords] = useState([]);
+  // get the _id correspond to the logged-in email and store in local storage, to persist across email changes
+  useEffect(()=>{ 
+    async function getUserID() {
+      const email = JSON.parse(localStorage.getItem('email'));
+      const response = await fetch(`http://localhost:4000/user/${email}`);
+      if (!response.ok) {
+        const message = `An error occurred: ${response.statusText}`;
+        console.error(message);
+        return;
+      }
+      const result = await response.json();
+      localStorage.setItem("id", JSON.stringify(result._id))    // store the currently logged-in user ID 
+    }
+    getUserID();
+    return;
+  }, [])
+
+  
+  const [records, setRecords] = useState([]);
   // This method fetches the product records from the database.
   useEffect(() => {
     async function getRecords() {
@@ -20,32 +33,22 @@ const [records, setRecords] = useState([]);
         return;
       }
       const records = await response.json();
-  
-      setRecords(records);
+
+      for (var product of records){
+        var userID = product.sellerID;
+        const response = await fetch(`http://localhost:4000/user/userID/${userID}`);
+        const result = await response.json();
+        product.sellername = result.username
+     }
+
+     setRecords(records);
     }
     getRecords();
     return;
   }, [records.length]);
 
-    // not used
-    const products2 = [
-         {name: 'lotion', price: 'RM100.00', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', src:lotion, brand:"HAAN body lotion", stars:5} ,
-        { name: 'moisturiser', price: 'RM400.00', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', src:mois, brand:"Aveeno Moisturiser", stars:3} ,
-        {name: 'cleanser', price: 'RM300.00', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' , src:cleanser, brand:"Neutrogena Cleanser", stars:1},
-        { name: 'toner', price: 'RM200.00', description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", src:toner , brand:"Thayers Witch Hazel Toner", stars:2},
-        { name: 'cleanser', price: 'RM75.00', description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", src:cleanser2 , brand:"Garnier Cleanser", stars:4}
-    ]  
 
-    // not used
-    const [products, setProducts] = useState([
-        { name: 'Lotion', price: 'RM100', description: '...' },
-        { name: 'Moisturiser', price: 'RM400', description: '...' },
-        { name: 'Cleansers', price: 'RM300', description: '...' },
-        { name: 'Toners', price: 'RM200', description: '...' },
-      ]);
-    
-    
-      if(sort=="price-asc"){
+    if(sort=="price-asc"){
         const sortedProducts = sortProductsByPriceAsc(records); // Sort before rendering
 
       return (
@@ -96,13 +99,12 @@ const [records, setRecords] = useState([]);
   else{
       return (
       <div>
-         {records.map((product) => ( 
-          <ProductCard key={product._id} index={product._id.toString()} name={product.name} filter={filter} {...product} imgsrc={product.img} seller={product.sellername} stars={product.stars}/> // Spread product data to ProductCard
+         {records.map((product) =>(
+            <ProductCard key={product._id} index={product._id.toString()} name={product.name} filter={filter} {...product} imgsrc={product.img} seller={product.sellername} stars={product.stars}/> // Spread product data to ProductCard
         ))}
       </div>
     );
   }
-
 
     function sortProductsByPriceAsc(products) {
         return products.sort((productA, productB) => {
@@ -135,6 +137,7 @@ const [records, setRecords] = useState([]);
           return starB - starA; // Descending order (highest to lowest)
         });
       }
+      
 }
 
 

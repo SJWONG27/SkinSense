@@ -16,10 +16,35 @@ import { Select, MenuItem, InputLabel, FormControl} from '@mui/material';
 import './product.css';
 
 function ViewProduct(){
-  
+  const [submittedReviews, setSubmittedReviews] = useState([]);
   const params = useParams();
   const [username, setUsername] = useState("");
   const [comments, setComments] = useState([]);
+
+  const [userID, setUserID] = useState("");
+
+  // to get the user ID, to trace name of commenter
+  useEffect(()=>{ 
+    async function getUserID() {
+      const id = JSON.parse(localStorage.getItem('id'));
+      setUserID(id);
+    }
+    getUserID();
+    return;
+  }, [])
+
+  // to get the username, based on user ID
+  useEffect(()=>{ 
+  async function getUsername() {
+    const userID = JSON.parse(localStorage.getItem('id'));
+    const response = await fetch(`http://localhost:4000/user/userID/${userID}`);
+    const result = await response.json();
+    setUsername(result.username)
+  }
+  getUsername();
+  return;
+  }, [])
+
   // This method fetches the product comments from the database.
   useEffect(() => {
     async function getComments() {
@@ -30,27 +55,39 @@ function ViewProduct(){
         return;
       }
       const result = await response.json();
+
+      for (var comment of result.comments){
+        var userID = comment.userID;
+        const response = await fetch(`http://localhost:4000/user/userID/${userID}`);
+        const result = await response.json();
+        comment.username = result.username
+      }
       setComments(result.comments);
     }
     getComments();
     return;
-  }, [comments.length]);
+  }, [comments.length, submittedReviews.length]);
 
-  useEffect(()=>{ 
-    async function getUsername() {
-      const email = JSON.parse(localStorage.getItem('email'));
-      const response = await fetch(`http://localhost:4000/user/${email}`);
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`;
-        console.error(message);
-        return;
-      }
-      const result = await response.json();
-      setUsername(result.username);
-  }
-  getUsername();
-  return;
-}, [])
+  // This useEffect hook calculates the accumulated stars for this product & update to Product collection
+  useEffect(()=>{
+    async function getStars(){
+        var sum = 0;  // get the total stars collected
+        comments.map((comment)=>{sum+=comment.star})
+        var avgStars = Math.ceil(sum/comments.length); // get the upper bound
+        const response = await fetch(`http://localhost:4000/product/${params.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+             star: avgStars
+          })
+        }) 
+        const result = await response.json()
+     }
+     getStars();
+     return;
+},[comments.length, submittedReviews.length])
 
   const [state, setState] = useState({
     open: false,
@@ -73,7 +110,6 @@ function ViewProduct(){
     const [openDialog, setOpenDialog] = useState(false);
     const [star, setStar] = useState(0);  // for star ratings
     const[review, setReview] = useState("");
-    const [submittedReviews, setSubmittedReviews] = useState([]);
 
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
@@ -110,7 +146,7 @@ function ViewProduct(){
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-              username: username,
+              userID: userID,
               star: star,
               content: review
           })
@@ -581,9 +617,9 @@ function ViewProduct(){
                     </Dialog>
               </div>
               </h2>
-              {submittedReviews.map((review) => (
+              {/* {submittedReviews.map((review) => (
               <Review key={review.date} username={review.username} content={review.content} star={review.star} date={review.date} />
-               ))}
+               ))} */}
             {comments.length>0 && comments.map((review) => (
                 <Review key={review.date} username={review.username} content={review.content} star={review.star} date={review.date.slice(0,10)} />
               ))}
@@ -631,7 +667,10 @@ function ViewProduct(){
         }
         
         const year = today.getFullYear();
-        const date = today.getDate();
+        var date = today.getDate();
+        if(date.toString().length<2){
+          date = "0"+date;
+        }
         return `${year}-${month}-${date}`;
       }
 }

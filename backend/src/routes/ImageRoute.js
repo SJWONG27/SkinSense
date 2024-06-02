@@ -29,7 +29,7 @@ router.post("/upload", upload.single("avatar"), async (req, res) => {
           price: req.body.price,
           quantity: req.body.quantity,
           img: actualPath,
-          sellername:req.body.sellername
+          sellerID:req.body.sellerID
         }
       )
       
