@@ -149,7 +149,7 @@ function ChatRoom({ user, currentUser }) { //user= selecteduser
             }
           });
           setMessages(response.data);
-          
+
         } catch (error) {
           console.error('Error fetching messages:', error);
         }
@@ -168,19 +168,21 @@ function ChatRoom({ user, currentUser }) { //user= selecteduser
       minute: '2-digit',
     });
 
-    const newMessage = {
-      content: formValue,
-      file: file ? URL.createObjectURL(file) : null,
-      fileType: file ? file.type : null,
-      timestamp: currentTime,
-    };
-
     try {
-      // Send message to backend
-      const response = await axios.post('http://localhost:4000/chat/newMessage', {
-        senderName: currentUser,
-        receiverName: user,
-        ...newMessage
+      const formData = new FormData();
+      formData.append('senderName', currentUser);
+      formData.append('receiverName', user);
+      formData.append('content', formValue);
+      formData.append('timestamp', currentTime);
+
+      if (file) {
+        formData.append('file', file);
+      }
+
+      const response = await axios.post('http://localhost:4000/chat/newMessage', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
       // Update messages state
@@ -196,6 +198,8 @@ function ChatRoom({ user, currentUser }) { //user= selecteduser
       console.error('Error sending message:', error);
     }
   };
+
+
   const handleFileUpload = () => {
     fileInputRef.current.click();
   };
@@ -224,15 +228,16 @@ function ChatRoom({ user, currentUser }) { //user= selecteduser
 
 function ChatMessage({ message, currentUser }) {
   const messageClass = message.senderName === currentUser ? 'sent' : 'received';
-  console.log("Sender:", message.senderName);
-  console.log("CurrentUser:", currentUser);
-  console.log('message:', message);
 
+  const getImgUrl = (imgPath) => {
+    const adjustedPath = imgPath.replace('/frontend/src/uploads/', '/src/uploads/');
+    return `/${adjustedPath}`;
+  }
 
   return (
     <div className={`chatmessage ${messageClass}`}>
       {message.content && !message.file && <p>{message.content}</p>}
-      {message.file && (<img src={message.file} className={`uploaded-image ${message.senderName === currentUser ? 'sent-image' : 'received-image'}`}/>)}
+      {message.file && (<img src={getImgUrl(message.file)} className={`uploaded-image ${message.senderName === currentUser ? 'sent-image' : 'received-image'}`} />)}
       <div className="message-time">{message.timestamp}</div>
     </div>
   )

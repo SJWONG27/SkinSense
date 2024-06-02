@@ -1,41 +1,73 @@
 import React, { useRef, useState, useEffect } from 'react';
+import axios from 'axios'
 
-
-const sampleChats = [
-  { id: 1, name: 'John', orderStatus: 'Pending' },
-  { id: 2, name: 'Alice', orderStatus: 'Delivered' },
-  { id: 3, name: 'Bob', orderStatus: 'Cancelled' },
-  { id: 4, name: 'Adam', orderStatus: 'Delivered' }
-];
-
-function ChatManagement() {
+function Chat() {
+  const [users, setUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [openRooms, setOpenRooms] = useState({}); // Define openRooms state
 
+  //fetch current user from the backend
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await axios.get('http://localhost:4000/chat/currentUser', { withCredentials: true });
+        setCurrentUser(response.data);  //the response.data already is the username le, so currentUser is username of the uer
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
+  // Fetch users from the backend
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('http://localhost:4000/chat/sellerModuleUserName', {
+          params: {
+            currentUser: currentUser
+          }
+        });
+        setUsers(response.data);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, [currentUser]); //maybe can add dependency here
+
   const handleUserClick = (user) => {
-    setSelectedUser(user.id);
+    setSelectedUser(user);
     // If the chat room is not already open, add it to openRooms state
-    if (!openRooms[user.id]) {
+    if (!openRooms[user]) {
       // Mark the chat room as open
-      setOpenRooms({ ...openRooms, [user.id]: true });
+      setOpenRooms({ ...openRooms, [user]: true });
     }
     // Handle updating messages in the future
   };
 
   return (
     <div className='MainContentContainer'>
-        <div className="sellerchatcontainer">
-          <ChatList onUserClick={handleUserClick} />
-          {selectedUser && <ChatRoom user={selectedUser} />}
-        </div>
+      <div className="sellerchatcontainer">
+        <ChatList users={users} onUserClick={handleUserClick} />
+        {selectedUser && <ChatRoom user={selectedUser} currentUser={currentUser} />}
+      </div>
     </div>
   );
 }
 
-function ChatList({ onUserClick }) {
-  const [chats, setChats] = useState(sampleChats);
+function ChatList({ users, onUserClick }) {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState(users)
+
+  // Synchronize filteredUsers with users when users change
+  useEffect(() => {
+    setFilteredUsers(users);
+  }, [users]);
 
   // Function to handle changes in the search input
   const handleSearch = (e) => {
@@ -48,24 +80,24 @@ function ChatList({ onUserClick }) {
   const handleStatusChange = (e) => {
     const status = e.target.value;
     setSelectedStatus(status);
-    filterChats(status);
+    filterChatsByProgress(status);
   };
 
-  const filterChats = (status) => {
+  const filterChatsByProgress = (status) => {
     if (status === 'All') {
-      setChats(sampleChats);
+      setFilteredUsers(users)
     } else {
-      const filteredChats = sampleChats.filter(chat => chat.orderStatus === status);
-      setChats(filteredChats);
+      const filteredArray = users.filter(chat => chat.orderStatus === status);  //need modify later
+      setFilteredUsers(filteredArray);
     }
   };
 
   const filterChatsByName = (searchQuery) => {
     if (searchQuery === '') {
-      setChats(sampleChats);
+      setFilteredUsers(users);
     } else {
-      const filteredChats = sampleChats.filter(chat =>chat.name.toLowerCase().includes(searchQuery.toLowerCase()));
-      setChats(filteredChats);
+      const filteredArray = users.filter(user => user.toLowerCase().includes(searchQuery.toLowerCase()));
+      setFilteredUsers(filteredArray);
     }
   };
 
@@ -75,8 +107,8 @@ function ChatList({ onUserClick }) {
         <label htmlFor="orderStatus" className="order-status-label"></label>
         <select id="orderStatus" onChange={handleStatusChange} value={selectedStatus}>
           <option value="All">All</option>
-          <option value="Pending">Pending</option>
-          <option value="Cancelled">Cancelled</option>
+          <option value="Pending">Processing</option>
+          <option value="Cancelled">Shipped</option>
           <option value="Delivered">Delivered</option>
         </select>
       </div>
@@ -84,9 +116,9 @@ function ChatList({ onUserClick }) {
         <input type="text" placeholder="Search user..." value={searchQuery} onChange={handleSearch} className="search-input" />
       </div>
       <div className="chat-items-container">
-        {chats.map((chat) => (
-          <div key={chat.id} className="chat-item" onClick={() => onUserClick(chat)}>
-            <div>{chat.name}</div>
+        {filteredUsers.map((user, index) => (
+          <div key={index} className="chat-item" onClick={() => onUserClick(user)}>
+            <div>{user}</div>
           </div>
         ))}
       </div>
@@ -95,45 +127,80 @@ function ChatList({ onUserClick }) {
 }
 
 
-function ChatRoom({user}) {
+function ChatRoom({ user, currentUser }) { //user= selecteduser
   const dummy = useRef();
   const [messages, setMessages] = useState([]);
   const [formValue, setFormValue] = useState('');
   const [file, setFile] = useState(null);
   const fileInputRef = useRef(null);
 
+
   // Reset messages when a new user is clicked
   useEffect(() => {
     setMessages([]);
   }, [user]);
 
-  const sendMessage = (e) => {
-    e.preventDefault();
-    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  useEffect(() => {
+    if (user) {
+      // Fetch previous messages for the selected user from the backend
+      const fetchMessages = async () => {
+        try {
+          const response = await axios.get(`http://localhost:4000/chat/${user}/messages`, {
+            params: {
+              currentUser: currentUser
+            }
+          });
+          setMessages(response.data);
 
-    if (file) {
-      const newMessage = {
-        text: '',
-        file: URL.createObjectURL(file), 
-        time: currentTime,
+        } catch (error) {
+          console.error('Error fetching messages:', error);
+        }
       };
-      setMessages([...messages, newMessage]);
-    } else if (formValue) {
-      const newMessage = {
-        text: formValue,
-        file: null,
-        time: currentTime,
-      };
-      setMessages([...messages, newMessage]);
+      fetchMessages();
     }
+  }, [user]);
 
-    setFormValue('');
-    setFile(null);
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    const currentTime = new Date().toLocaleTimeString([], {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
-    const chatContent = document.querySelector('.chatcontent');
-    chatContent.scrollTop = chatContent.scrollHeight;
+    try {
+      const formData = new FormData();
+      formData.append('senderName', currentUser);
+      formData.append('receiverName', user);
+      formData.append('content', formValue);
+      formData.append('timestamp', currentTime);
+
+      if (file) {
+        formData.append('file', file);
+      }
+
+      // Send message to backend
+      const response = await axios.post('http://localhost:4000/chat/newMessage', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      // Update messages state
+      setMessages(prevMessages => [...prevMessages, response.data]);
+
+      setFormValue('');
+      setFile(null);
+
+      // dummy.current.scrollIntoView({ behavior: 'smooth' });
+      const chatContent = document.querySelector('.chatcontent');
+      chatContent.scrollTop = chatContent.scrollHeight;
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
-
   const handleFileUpload = () => {
     fileInputRef.current.click();
   };
@@ -145,29 +212,35 @@ function ChatRoom({user}) {
   };
 
   return (
-      <div className='chatcontent'>
-        {messages.map((msg, index) => (
-          <ChatMessage key={index} message={msg} />
-        ))}
-        <span ref={dummy}></span>
-        <form className="formchatcontent2" onSubmit={sendMessage}>
-          <input value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="Type a message..." />
-          <button type="submit" disabled={!formValue} className="send-button"> </button>
-          <button type="button" onClick={handleFileUpload} className="upload-button"> </button>
-          <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} />
-        </form>
-      </div>
-  )
-}
-
-function ChatMessage({ message }) {
-  return (
-    <div className="chatmessage">
-      {message.text && <p>{message.text}</p>}
-      {message.file && (<img src={message.file} className="uploaded-image" />)}
-      <div className="message-time">{message.time}</div>
+    <div className='chatcontent'>
+      {messages.map((msg, index) => (
+        <ChatMessage key={index} message={msg} userSelected={user} currentUser={currentUser} />
+      ))}
+      <span ref={dummy}></span>
+      <form className="formchatcontent2" onSubmit={sendMessage}>
+        <input value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="Type a message..." />
+        <button type="submit" disabled={!formValue} className="send-button"> </button>
+        <button type="button" onClick={handleFileUpload} className="upload-button"> </button>
+        <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} />
+      </form>
     </div>
   )
 }
 
-export default ChatManagement;
+function ChatMessage({ message, currentUser }) {
+  const messageClass = message.senderName === currentUser ? 'sent' : 'received';
+
+  const getImgUrl = (imgPath) => {
+    const adjustedPath = imgPath.replace('/frontend/src/uploads/', '/src/uploads/');
+    return `/${adjustedPath}`;
+  }
+
+  return (
+    <div className={`chatmessage ${messageClass}`}>
+      {message.content && !message.file && <p>{message.content}</p>}
+      {message.file && (<img src={getImgUrl(message.file)} className={`uploaded-image ${message.senderName === currentUser ? 'sent-image' : 'received-image'}`} />)}
+      <div className="message-time">{message.timestamp}</div>
+    </div>
+  )
+}
+export default Chat;

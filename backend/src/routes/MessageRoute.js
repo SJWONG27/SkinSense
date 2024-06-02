@@ -4,6 +4,75 @@ const User = require('../models/UserModel');
 const UserMessage = require('../models/UserMessageModel');
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const multer = require('multer');
+
+const storage2 = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, '../frontend/src/uploads');
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + file.originalname);
+    }
+});
+
+const upload = multer({ storage: storage2 });
+
+
+
+//get current user
+router.get('/currentUser', async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        jwt.verify(token, `${process.env.TOKEN_KEY}`, async (err, data) => {
+            if (err) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const userId = data.id;
+            const user = await User.findById(userId, 'username');
+            res.json(user.username);
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+//get user list
+router.get('/userName', async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        jwt.verify(token, `${process.env.TOKEN_KEY}`, async (err, data) => {
+            if (err) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+
+            const userId = data.id;
+            const users = await User.find({ _id: { $ne: userId } }, 'username');
+            res.json(users);
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+//get user list for seller module
+router.get('/sellerModuleUserName', async (req, res) => {
+    const currentUser = req.query.currentUser;
+    try {
+        const users = await UserMessage.distinct('senderName', { receiverName: currentUser });
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
 
 // GET messages for a specific user
 router.get('/:user/messages', async (req, res) => {
@@ -35,18 +104,25 @@ router.get('/:user/messages', async (req, res) => {
     }
 });
 
-
-// POST a new message
-router.post('/newMessage', async (req, res) => {
-    const { senderName, receiverName, ...messageData } = req.body;
-    const message = new UserMessage({
-        senderName,
-        receiverName,
-        messages: [messageData]
-    });
+// POST a new message with file upload
+router.post('/newMessage', upload.single('file'), async (req, res) => {
+    const { senderName, receiverName, content, timestamp } = req.body;
+    const file = req.file ? req.file.path : null; // Save the file path if it exists
+    const filepath = file ? file.replace(/\\/g, "/") : null;
 
     try {
+        const message = new UserMessage({
+            senderName,
+            receiverName,
+            messages: [{
+                content,
+                timestamp,
+                file: filepath
+            }]
+        });
+
         const newMessage = await message.save();
+
         const lastMessage = newMessage.messages[newMessage.messages.length - 1];
         const simplifiedMessage = {
             senderName,
@@ -58,61 +134,6 @@ router.post('/newMessage', async (req, res) => {
         res.status(201).json(simplifiedMessage);
     } catch (err) {
         res.status(400).json({ message: err.message });
-    }
-});
-
-// Other CRUD operations can be added similarly
-
-// GET all user names
-// router.get('/userName', async (req, res) => {
-//     try {
-//         const users = await User.find({}, 'username');
-//         // const users = await Product.find({});
-//         res.json(users)
-//     } catch (err) {
-//         res.status(500).json({ message: err.message });
-//     }
-// });
-
-router.get('/userName', async (req, res) => {
-    try {
-        const token = req.cookies.token;
-        if (!token) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-
-        jwt.verify(token, `${process.env.TOKEN_KEY}`, async (err, data) => {
-            if (err) {
-                return res.status(401).json({ message: "Unauthorized" });
-            }
-
-            const userId = data.id;
-            const users = await User.find({ _id: { $ne: userId } }, 'username');
-            res.json(users);
-        });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-router.get('/currentUser', async (req, res) => {
-    try {
-        const token = req.cookies.token;
-        if (!token) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-
-        jwt.verify(token, `${process.env.TOKEN_KEY}`, async (err, data) => {
-            if (err) {
-                return res.status(401).json({ message: "Unauthorized" });
-            }
-
-            const userId = data.id;
-            const user = await User.findById(userId, 'username');
-            res.json(user.username);
-        });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
     }
 });
 
