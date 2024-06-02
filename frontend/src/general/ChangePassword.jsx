@@ -1,6 +1,6 @@
 // ChangePassword.jsx
 import React, { useState } from 'react';
-import '../App.css';
+import './generalIndex.css';
 
 const ChangePassword = () => {
   const [formData, setFormData] = useState({

@@ -89,7 +89,7 @@ const Login = () => {
                     </div>
                     <div className="remember-forgot-password">
                         <label><input type="checkbox" />Remember Me</label>
-                        <Link>Forgot Password?</Link>
+                        <Link to="/forgot-password">Forgot Password?</Link>
                     </div>
                     <div className="submit-container">
                         <button type="submit">LOGIN</button>

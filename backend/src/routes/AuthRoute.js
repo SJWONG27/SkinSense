@@ -1,4 +1,4 @@
-const { Signup, Login, updateProfile  } = require('../controllers/AuthController')
+const { Signup, Login, updateProfile, forgotPassword, resetPassword  } = require('../controllers/AuthController')
 const { userVerification } = require('../middleware/AuthMiddleware')
 const router = require('express').Router()
 const profileRoute = require('./ProfileRoute');
@@ -21,6 +21,7 @@ router.post('/', userVerification, (req, res) => {
 router.post('/signup', Signup)
 router.post('/login', Login)
 router.use('/profile', profileRoute);
-
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password/:token', resetPassword);
 
 module.exports = router

@@ -11,8 +11,9 @@ const imageRoute = require("./routes/ImageRoute");
 const productRoute = require("./routes/ProductRoute");
 const userRoute = require("./routes/UserRoute");
 const messageRoute = require("./routes/MessageRoute")
-const profileRoute = require("./routes/ProfileRoute")
+const profileRoute = require("./routes/ProfileRoute");
 const { MONGO_URI, PORT } = process.env;
+const path = require('path'); 
 
 
 console.log('PORT:', process.env.PORT);
@@ -52,6 +53,19 @@ app.use("/product", productRoute)
 app.use("/user", userRoute)
 app.use("/chat", messageRoute)
 
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../../frontend/dist')));
+
+// Catch-all route to serve React's index.html for any non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
 
 
 
