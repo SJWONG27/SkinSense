@@ -12,6 +12,8 @@ const productRoute = require("./routes/ProductRoute");
 const userRoute = require("./routes/UserRoute");
 const messageRoute = require("./routes/MessageRoute")
 const profileRoute = require("./routes/ProfileRoute");
+const stripeRoute = require("./routes/StripeRoute")
+
 const { MONGO_URI, PORT } = process.env;
 const path = require('path'); 
 
@@ -52,6 +54,7 @@ app.use('/uploads', profileRoute);
 app.use("/product", productRoute)
 app.use("/user", userRoute)
 app.use("/chat", messageRoute)
+app.use("/api/stripe",stripeRoute)
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../../frontend/dist')));
@@ -66,6 +69,7 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });
+
 
 
 
