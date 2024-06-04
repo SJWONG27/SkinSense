@@ -10,14 +10,14 @@ const Payment = () => {
 
     try {
       const response = await axios.post('http://localhost:4000/api/stripe/create-checkout-session', {
-        items: [
-          { name: 'Item 1', price: 1000, quantity: 1 },
-          { name: 'Item 2', price: 2000, quantity: 2 }
-        ],
-        amount: 5000 // example amount
+        userId: 'exampleUserId', // Replace with actual userId if needed
+        cartItems: [
+          { name: 'Item 1', price: 1000, cartQuantity: 1, image: 'image_url', desc: 'Description 1', id: 'item1' },
+          { name: 'Item 2', price: 2000, cartQuantity: 2, image: 'image_url', desc: 'Description 2', id: 'item2' }
+        ]
       });
 
-      const { id: sessionId } = response.data;
+      const { sessionId } = response.data;
 
       const result = await stripe.redirectToCheckout({ sessionId });
 
@@ -37,6 +37,5 @@ const Payment = () => {
 };
 
 export default Payment;
-
 
 
