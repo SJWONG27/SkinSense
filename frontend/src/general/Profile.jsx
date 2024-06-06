@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import defaultProfilePhoto from '../assets/images/img_avatar.jpeg';
+import defaultProfilePhoto from '../assets/images/img_avatar.jpg';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from "react-cookie";
 import axios from "axios";

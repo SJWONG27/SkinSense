@@ -9,9 +9,11 @@ import ShoppingCart from '../shoppingcart/ShoppingCart';
 import Transaction from '../payment/Transaction';
 import NavBar from '../NavBar';
 import './product.css';
+import { UserProvider } from '../general/UserContext';
 
 function Buyer() {
   return (
+    <UserProvider>
     <div className='mainHomeContainer'>
       <div className='navBarContainer'>
         <NavBar/>
@@ -27,6 +29,7 @@ function Buyer() {
         <Route path="/sellerDashboard/*" element={<SellerDashboard />} />
       </Routes>
     </div>
+    </UserProvider>
   );
 }
 
