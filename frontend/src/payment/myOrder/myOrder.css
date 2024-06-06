@@ -1,0 +1,70 @@
+.my-order-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .my-order-container .order-list {
+    width: 600px;
+  }
+  
+  .my-order-container .order {
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+  
+  .my-order-container .order .order-id {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .my-order-container .order .order-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .my-order-container .order .order-item img {
+    width: 50px;
+    margin-right: 10px;
+  }
+  
+  .my-order-container .order .order-item .item-info {
+    flex: 1;
+  }
+  
+  .my-order-container .order .order-item .item-info h3 {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .my-order-container .order .order-item .item-info p {
+    margin: 5px 0;
+  }
+  
+  .my-order-container .order .order-item .item-info .price {
+    font-weight: bold;
+  }
+  
+  .my-order-container .order .order-status {
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
+  .my-order-container .order .order-status .status {
+    color: #4f0d1c;
+  }
+  
+  .my-order-container .order .order-status .status.shipped {
+    color: #0056b3;
+  }
+  
+  .my-order-container .order .order-status .status.delivered {
+    color: #00b32d;
+  }
+  

@@ -22,22 +22,6 @@
   /*max-height: calc(100vh - 140px);*/
 }
 
-.chat-list-container .order-status-container {
-  display: flex;
-  align-items: center;
-  padding-top: 35px;
-  padding-bottom: 15px; 
-}
-
-.chat-list-container .order-status-label {
-  display: block;
-  width: 35px;
-  height: 35px;
-  background-image: url('../assets/images/chat/order_status.png');
-  background-size: contain; 
-  background-repeat: no-repeat;
-}
-
 .chat-list-container .search-container {
   width: 100px;
   height: 30px;

@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 
 const Footer = () => {
     const location = useLocation();
-    const hideFooter = location.pathname === '/' || location.pathname === '/register';
+    const hideFooter = location.pathname === '/' || location.pathname === '/register' || location.pathname==='/forgot-password' ||location.pathname.startsWith('/reset-password');
     if (hideFooter) {
         return null; // Render nothing if the footer should be hidden
       }
