@@ -54,7 +54,6 @@ const Profile = () => {
           setDateOfBirth(formatDate(user.dateOfBirth));
           setImage(user.profilePic ? getImgUrl(user.profilePic) : defaultProfilePhoto);
           setUserId(user._id);
-          toast(`Hello ${user.username}`, { position: "top-right" });
         } else {
           removeCookie("token");
           navigate("/");
@@ -179,7 +178,10 @@ const Profile = () => {
             <button type="submit">Save changes</button>
           </div>
         </form>
-        <button onClick={handleLogout}>Logout</button>
+        <div className='submit-container'>
+          <button className="btn-logout" onClick={handleLogout}>Logout</button>
+        </div>
+        
       </div>
       <ToastContainer />
     </div>
