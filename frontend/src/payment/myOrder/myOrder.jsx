@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './MyOrder.css'; 
+import './myOrder.css';
 
 const MyOrder = () => {
   const [orders, setOrders] = useState([]);
@@ -13,7 +13,11 @@ const MyOrder = () => {
         const { data } = await axios.get('/api/orders/myorders', {
           withCredentials: true, // This sends cookies with the request
         });
-        setOrders(data);
+        if (Array.isArray(data)) {
+          setOrders(data);
+        } else {
+          setError("Unexpected response format.");
+        }
         setLoading(false);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -67,4 +71,3 @@ const MyOrder = () => {
 };
 
 export default MyOrder;
-

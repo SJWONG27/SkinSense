@@ -8,6 +8,7 @@ import Chat from '../chatsupport/Chat';
 import ShoppingCart from '../shoppingcart/ShoppingCart';
 import Transaction from '../payment/Transaction';
 import NavBar from '../NavBar';
+import MyOrder from '../payment/myOrder/myOrder';
 import './product.css';
 import { UserProvider } from '../general/UserContext';
 
@@ -25,6 +26,7 @@ function Buyer() {
         <Route path="/chat" element={<Chat />} />
         <Route path="/shoppingcart" element={<ShoppingCart/>} />
         <Route path="/profilePage" element={<Profile/>} />
+        <Route path="/myOrder" element={<MyOrder/>} />
         <Route path="/transaction/*" element={<Transaction/>} />
         <Route path="/sellerDashboard/*" element={<SellerDashboard />} />
       </Routes>

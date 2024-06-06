@@ -1,8 +1,11 @@
 .my-order-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-top: 80px; 
+  align-items: center;
+  padding: 10px;
   }
   
   .my-order-container .order-list {

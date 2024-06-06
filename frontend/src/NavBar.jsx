@@ -15,6 +15,7 @@ function NavBar(){
                 <Link to="/products" className='link'>Products</Link>
                 <Link to="/chat" className='link'>Chat</Link>
                 <Link to="/sellerDashboard" className='link'>Seller Centre</Link>
+                <Link to="/myOrder" className='link'>My Order</Link>
             </div>
             <div className="navbarLinkContainer">
                 <Link to="/shoppingcart" className='link'>
