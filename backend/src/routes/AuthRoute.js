@@ -6,7 +6,7 @@ const profileRoute = require('./ProfileRoute');
 
 router.post('/', userVerification, (req, res) => {
     res.json({
-      status: true,
+      status: true, 
       user: {
         username: req.user.username,
         email: req.user.email,
@@ -19,7 +19,7 @@ router.post('/', userVerification, (req, res) => {
     });
   });
 router.post('/signup', Signup)
-router.post('/login', Login)
+router.post('/login', Login) 
 router.use('/profile', profileRoute);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);

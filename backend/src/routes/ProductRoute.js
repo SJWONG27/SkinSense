@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Product = require('../models/ProductModel');
-// This help convert the id from string to ObjectId for the _id.
+const auth = require("../middleware/AuthMiddleware");
 const { ObjectId } = require('mongodb');
 
 // This section will help you get a list of all the products.
@@ -10,18 +10,27 @@ router.get("/", async (req, res) => {
   res.send(results).status(200);
 });
 
-// This section update Product stars based on comments
-router.patch("/:id", async (req, res)=>{
-  try{
-    const updates = {$set: {stars:req.body.star}}
-    const results = await Product.findByIdAndUpdate(req.params.id, updates)
-    res.send(results).status(200);
-  }
-  catch (err) {
+router.patch("/:id", auth.userVerification, async (req, res) => {
+  try {
+    if (req.body.star !== undefined) {
+      // Update stars
+      const updates = { $set: { stars: req.body.star } };
+      const result = await Product.findByIdAndUpdate(req.params.id, updates, { new: true });
+      res.status(200).json(result);
+    } else {
+      // Update product details
+      const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      if (updatedProduct) {
+        res.status(200).json(updatedProduct);
+      } else {
+        res.status(404).json({ message: 'Product not found' });
+      }
+    }
+  } catch (err) {
     console.error(err);
-    res.status(500).send("Error updating record");
+    res.status(500).json({ message: 'Error updating product' });
   }
-})
+});
 
 
 
@@ -56,4 +65,28 @@ router.patch("/comments/:id", async (req, res) => {
     }
   });
 
-module.exports = router;
+  router.get("/myproducts", auth.userVerification, async(req, res) => {
+    try{
+      const results = await Product.find({sellerID: req.user._id});
+      res.status(200).send(results);
+    } catch(err){
+      console.error(err);
+      res.status(500).send("Error fetching products for user")
+    }
+  });
+
+  router.delete('/:id', auth.userVerification, async (req, res) => {
+    try {
+      const result = await Product.findByIdAndDelete(req.params.id);
+      if (result) {
+        res.status(200).json({ message: 'Product deleted successfully' });
+      } else {
+        res.status(404).json({ message: 'Product not found' });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error deleting product' });
+    }
+  });  
+
+module.exports = router;  
