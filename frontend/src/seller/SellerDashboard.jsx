@@ -21,7 +21,6 @@ const MainLayout = () => {
           <Route path="*/MyProduct" element={<MyProduct />} />
           <Route path="*/AddProduct" element={<AddProduct />} />
           <Route path="*/ChatManagement" element={<ChatManagement />} />
-          <Route path="*/Finance" element={<Finance />} />
           <Route path='/' element={<Order/>}/>
         </Routes>
       </div>

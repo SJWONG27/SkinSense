@@ -28,7 +28,6 @@ function SideBar() {
                     )}
                 </li>
                 <li><Link to='*/ChatManagement'>Chat</Link></li>
-                <li><Link to='*/Finance'>Finance</Link></li>
             </ul>
         </div>
     )

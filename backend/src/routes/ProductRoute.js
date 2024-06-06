@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
   res.send(results).status(200);
 });
 
-router.patch("/:id", auth.userVerification, async (req, res) => {
+router.patch("/:id",  async (req, res) => {
   try {
     if (req.body.star !== undefined) {
       // Update stars
