@@ -76,22 +76,6 @@ function ChatList({ users, onUserClick }) {
     filterChatsByName(searchQuery);
   };
 
-  // Function to handle changes in the dropdown selection
-  const handleStatusChange = (e) => {
-    const status = e.target.value;
-    setSelectedStatus(status);
-    filterChatsByProgress(status);
-  };
-
-  const filterChatsByProgress = (status) => {
-    if (status === 'All') {
-      setFilteredUsers(users)
-    } else {
-      const filteredArray = users.filter(chat => chat.orderStatus === status);  //need modify later
-      setFilteredUsers(filteredArray);
-    }
-  };
-
   const filterChatsByName = (searchQuery) => {
     if (searchQuery === '') {
       setFilteredUsers(users);
@@ -103,15 +87,6 @@ function ChatList({ users, onUserClick }) {
 
   return (
     <div className="chat-list-container">
-      <div className="order-status-container">
-        <label htmlFor="orderStatus" className="order-status-label"></label>
-        <select id="orderStatus" onChange={handleStatusChange} value={selectedStatus}>
-          <option value="All">All</option>
-          <option value="Pending">Processing</option>
-          <option value="Cancelled">Shipped</option>
-          <option value="Delivered">Delivered</option>
-        </select>
-      </div>
       <div className="search-container">
         <input type="text" placeholder="Search user..." value={searchQuery} onChange={handleSearch} className="search-input" />
       </div>
