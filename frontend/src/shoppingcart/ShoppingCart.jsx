@@ -33,6 +33,10 @@ const ShoppingCart = () => {
   const calculateTotalPrice = () => {
     return products.reduce((total, product) => total + (product.price * product.quantity), 0);
   };
+  const handleCheckout = () => {
+    const subtotal = calculateTotalPrice();
+    navigate('/transaction/checkout', { state: { subtotal } });
+  };
 
 
   return (
@@ -59,7 +63,7 @@ const ShoppingCart = () => {
           ))}
 
       <p>Total: RM{calculateTotalPrice()}</p>
-      <button onClick={()=> navigate('/transaction/checkout')}  >Checkout</button>
+      <button onClick={handleCheckout}>Checkout</button>
       </div>
     </div>
   );
