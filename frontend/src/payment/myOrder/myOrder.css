@@ -1,73 +1,68 @@
 .my-order-container {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  overflow-y: auto;
-  margin-top: 80px; 
-  align-items: center;
-  padding: 10px;
-  }
-  
-  .my-order-container .order-list {
-    width: 600px;
-  }
-  
-  .my-order-container .order {
-    background-color: #f8f8f8;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-  }
-  
-  .my-order-container .order .order-id {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  .my-order-container .order .order-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .my-order-container .order .order-item img {
-    width: 50px;
-    margin-right: 10px;
-  }
-  
-  .my-order-container .order .order-item .item-info {
-    flex: 1;
-  }
-  
-  .my-order-container .order .order-item .item-info h3 {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .my-order-container .order .order-item .item-info p {
-    margin: 5px 0;
-  }
-  
-  .my-order-container .order .order-item .item-info .price {
-    font-weight: bold;
-  }
-  
-  .my-order-container .order .order-status {
-    margin-top: 10px;
-    font-weight: bold;
-  }
-  
-  .my-order-container .order .order-status .status {
-    color: #4f0d1c;
-  }
-  
-  .my-order-container .order .order-status .status.shipped {
-    color: #0056b3;
-  }
-  
-  .my-order-container .order .order-status .status.delivered {
-    color: #00b32d;
-  }
-  
+  margin: 20px auto;
+  padding: 20px;
+  max-width: 800px;
+  text-align: center; /* Center align the text */
+}
+
+h1 {
+  font-size: 24px; /* Adjust the font size */
+  margin-bottom: 20px; /* Add some bottom margin */
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.order-table th,
+.order-table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.order-table th {
+  background-color: #f2f2f2;
+}
+
+.order-table img {
+  width: 50px;
+  height: auto;
+}
+
+.order-table td img {
+  display: block;
+  margin: 0 auto;
+}
+
+.order-table td {
+  vertical-align: middle;
+}
+
+.order-table td:first-child {
+  padding-left: 0;
+}
+
+.order-table td:last-child {
+  padding-right: 0;
+}
+
+.order-table td,
+.order-table th {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.order-table tr:last-child td {
+  border-bottom: none;
+}
+
+.order-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.order-table tr:hover {
+  background-color: #ddd;
+}
+

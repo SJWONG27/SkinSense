@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import './PlaceOrder.css'
-import { useNavigate,useLocation } from 'react-router-dom'
-import { loadStripe } from '@stripe/stripe-js';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
+import './PlaceOrder.css';
+import mastercardImg from "../../assets/images/mastercard.png";
+import payoneerImg from "../../assets/images/payoneer.png";
+import visaImg from '../../assets/images/visa.png';
+import maestroImg from '../../assets/images/maestro.png';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const PlaceOrder = () => {
-    const navigate = useNavigate();
     const location = useLocation();
     const stripePromise = loadStripe('pk_test_51P6u1x011mWT6ad4nb8H1uIBx9KKPLrjNxVuJ5TPXoAdeVrjkucxdAP7zoRMUsSGntXoOtDh01FbgCRizoTfwWAK00c00ZOowc');
     const [firstName, setFirstName] = useState('');
@@ -19,34 +23,25 @@ const PlaceOrder = () => {
     const [country, setCountry] = useState('');
     const [phone, setPhone] = useState('');
     const [promoCode, setPromoCode] = useState('');
-    const [discount, setDiscount] = useState(0);
     const [total, setTotal] = useState(0);
+    const [paymentMethod, setPaymentMethod] = useState('cash'); // Default to cash on delivery
     const [isSaved, setIsSaved] = useState(false); 
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const [discount, setDiscount] = useState(0);
+    const navigate = useNavigate();
+    const [showSuccessSnackbar, setShowSuccessSnackbar] = useState(false);
 
 
-// Retrieve the subtotal from location state
-const { subtotal } = location.state || { subtotal: 0 };
-const deliveryFee = subtotal === 0 ? 0 : 5;
 
-useEffect(() => {
-  const parsedSubtotal = parseFloat(subtotal);
-  if (!isNaN(parsedSubtotal)) {
-    const calculatedTotal = parsedSubtotal + deliveryFee - discount;
-    setTotal(calculatedTotal);
-  }
-}, [subtotal, deliveryFee, discount]);
+    // Retrieve the subtotal from location state
+    const { subtotal, cartItems } = location.state || { subtotal: 0, cartItems: [] };
 
-    // Calculate the total
     useEffect(() => {
-        const calculatedTotal = subtotal + 5 - 0; // Include delivery fee and discount
-        setTotal(calculatedTotal);
+        const parsedSubtotal = parseFloat(subtotal);
+        if (!isNaN(parsedSubtotal)) {
+            setTotal(parsedSubtotal);
+        }
     }, [subtotal]);
-
-    useEffect(() => {
-        const calculatedTotal = subtotal + deliveryFee - discount;
-        setTotal(calculatedTotal);
-    }, [subtotal, deliveryFee, discount]);
 
     useEffect(() => {
         const savedDeliveryInfo = JSON.parse(localStorage.getItem('deliveryInfo'));
@@ -117,14 +112,23 @@ useEffect(() => {
         const stripe = await stripePromise;
 
         try {
-            const response = await axios.post('http://localhost:4000/api/stripe/create-checkout-session', {
-                userId: 'exampleUserId', // Replace with actual userId if needed
-                cartItems: [
-                    { name: 'Item 1', price: 1000, cartQuantity: 1, image: 'image_url', desc: 'Description 1', id: 'item1' },
-                    { name: 'Item 2', price: 2000, cartQuantity: 2, image: 'image_url', desc: 'Description 2', id: 'item2' }
-                ]
-            });
+            const requestData = {
+                userId: 'exampleUserId',
+                cartItems: cartItems.map(item => ({
+                    name: item.name,
+                    price: item.price,
+                    cartQuantity: item.quantity,
+                    image: item.image,
+                    id: item.id
+                }))
+            };
 
+            // Include coupon code if provided
+            if (promoCode) {
+                requestData.couponCode = promoCode;
+            }
+
+            const response = await axios.post('http://localhost:4000/api/stripe/create-checkout-session', requestData);
             const { sessionId } = response.data;
 
             const result = await stripe.redirectToCheckout({ sessionId });
@@ -135,6 +139,19 @@ useEffect(() => {
         } catch (error) {
             console.error('Error during checkout process:', error.message);
         }
+    };
+
+    const handlePlaceOrderCashOnDelivery = () => {
+        // Your logic for placing the order with cash on delivery goes here
+        
+        // Show the success Snackbar
+        setShowSuccessSnackbar(true);
+    
+        // Hide the Snackbar and navigate after a delay
+        setTimeout(() => {
+            setShowSuccessSnackbar(false);
+            navigate('/transaction/Success');
+        }, 3000); // Adjust the duration as needed (in milliseconds)
     };
 
     const validateForm = () => {
@@ -151,97 +168,119 @@ useEffect(() => {
         );
     };
 
-    const handlePromoCodeSubmit = (e) => {
+    const handlePromoCodeSubmit = async (e) => {
         e.preventDefault();
 
-        if (promoCode === "EXAMPLE") {
-            setDiscount(subtotal * 0.1); 
+        try {
+            // Make an API request to your backend to validate and apply the promo code
+            const response = await axios.post('http://localhost:4000/api/apply-promo-code', {
+                promoCode: promoCode
+            });
+
+            // Assuming the response contains the discounted total amount
+            const { discountedTotal, discountAmount } = response.data;
+
+            // Update the UI with the discounted total amount and discount amount
+            setTotal(discountedTotal);
+            setDiscount(discountAmount);
+        } catch (error) {
+            console.error('Error applying promo code:', error.message);
+            // Handle any errors or display a message to the user
         }
     };
 
-    const calculateTotal = () => {
-        return subtotal + deliveryFee - discount;
-    };
-
-
-    useEffect(() => {
-        setIsSaved(false); 
-        setShowSuccessMessage(false);
-    }, []);
-
-  return (
-    <form className='place-order' onSubmit={handleFormSubmit}>
-      <div className="place-order-left">
-        <p className="title">Delivery Information</p>
-        <div className="multi-fields">
-            <input type="text" placeholder='First Name' value={firstName} onChange={(e) => setFirstName(e.target.value)} />{firstName.trim() === '' && <p className="error-message">**</p>}
-            <input type="text" placeholder='Last Name' value={lastName} onChange={(e) => setLastName(e.target.value)} />{lastName.trim() === '' && <p className="error-message">**</p>}
-        </div>
-        {email.trim() === '' && <p className="error-message">**</p>}
-        <input type="email" placeholder='Email address' value={email} onChange={(e) => setEmail(e.target.value)} />
-        {street.trim() === '' && <p className="error-message">**</p>}
-        <input type="text" placeholder='Street' value={street} onChange={(e) => setStreet(e.target.value)} />
-        <div className="multi-fields">
-            <input type="text" placeholder='City' value={city} onChange={(e) => setCity(e.target.value)} />{city.trim() === '' && <p className="error-message">**</p>}
-            <input type="text" placeholder='State' value={state} onChange={(e) => setState(e.target.value)} />{state.trim() === '' && <p className="error-message">**</p>}
-        </div>
-        <div className="multi-fields">
-            <input type="text" placeholder='Zip Code' value={zipCode} onChange={(e) => setZipCode(e.target.value)} />{zipCode.trim() === '' && <p className="error-message">**</p>}
-            <input type="text" placeholder='Country' value={country} onChange={(e) => setCountry(e.target.value)} />{country.trim() === '' && <p className="error-message">**</p>}
-        </div>
-        {phone.trim() === '' && <p className="error-message">**</p>}
-        <input type="text" placeholder='Phone' value={phone} onChange={(e) => setPhone(e.target.value)} />
-        <div className="save-button-container">
-    <button className='save-button' type="submit">{isSaved ? "Saved" : "Save"}</button>
-    {showSuccessMessage && <p className="success-message">Saved successfully!</p>}
-</div>
-            </div>
-      <div className="palce-order-right">
-        <div className='cart-total'>
-            <h2>Cart Totals</h2>
-            <div>
-                <div className="cart-total-details">
-                    <p>Subtotal</p>
-                    <p>RM{subtotal}</p>
+    return (
+        <form className='place-order' onSubmit={handleFormSubmit}>
+            <div className="place-order-left">
+                <p className="title">Delivery Information</p>
+                <div className="multi-fields">
+                    <input type="text" placeholder='First Name' value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                    {firstName.trim() === '' && <p className="error-message">**</p>}
+                    <input type="text" placeholder='Last Name' value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                    {lastName.trim() === '' && <p className="error-message">**</p>}
                 </div>
-                <hr />
-                <div className="cart-total-details">
-                    <p>Delivery Fee</p>
-                    <p>RM{deliveryFee}</p>
+                {email.trim() === '' && <p className="error-message">**</p>}
+                <input type="email" placeholder='Email address' value={email} onChange={(e) => setEmail(e.target.value)} />
+                {street.trim() === '' && <p className="error-message">**</p>}
+                <input type="text" placeholder='Street' value={street} onChange={(e) => setStreet(e.target.value)} />
+                <div className="multi-fields">
+                    <input type="text" placeholder='City' value={city} onChange={(e) => setCity(e.target.value)} />
+                    {city.trim() === '' && <p className="error-message">**</p>}
+                    <input type="text" placeholder='State' value={state} onChange={(e) => setState(e.target.value)} />
+                    {state.trim() === '' && <p className="error-message">**</p>}
                 </div>
-                <hr />
-                <div className="cart-total-details">
-                    <p>Discount</p>
-                    <p>RM{discount}</p>
+                <div className="multi-fields">
+                    <input type="text" placeholder='Zip Code' value={zipCode} onChange={(e) => setZipCode(e.target.value)} />
+                    {zipCode.trim() === '' && <p className="error-message">**</p>}
+                    <input type="text" placeholder='Country' value={country} onChange={(e) => setCountry(e.target.value)} />
+                    {country.trim() === '' && <p className="error-message">**</p>}
                 </div>
-                <hr />
-                <div className="cart-total-details">
-                    <b>Total</b>
-                    <b>RM{total}</b>
+                {phone.trim() === '' && <p className="error-message">**</p>}
+                <input type="text" placeholder='Phone' value={phone} onChange={(e) => setPhone(e.target.value)} />
+                <div className="save-button-container">
+                    <button className='save-button' type="submit">{isSaved ? "Saved" : "Save"}</button>
+                    {showSuccessMessage && <p className="success-message">Saved successfully!</p>}
                 </div>
             </div>
-        </div>
-        <div className="cart-promocode">
-            <div>
-                <p>If you have a coupon, Enter it here</p>
-                <div className='cart-promocode-input'>
-                    <input type="text" placeholder='Promo Code' value={promoCode} onChange={(e) => setPromoCode(e.target.value)} />
-                    <button onClick={handlePromoCodeSubmit}>Apply Promo Code</button>
+            <div className="place-order-right">
+            <p className="title">Payment Method</p>
+                <div className="cart-total">
+                <h5>Price</h5>
+                    <div className="cart-total-details">
+                        <p>Cart Subtotal</p>
+                        <p>RM{subtotal}</p>
+                    </div>
+                    <hr/>
+                    <div className="payment-options">
+                    <h5>Payment</h5>
+                        <label>
+                            <input
+                                type="radio"
+                                name="paymentMethod"
+                                value="cash"
+                                checked={paymentMethod === 'cash'}
+                                onChange={() => setPaymentMethod('cash')}
+                            />
+                            Cash on delivery
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="paymentMethod"
+                                value="card"
+                                checked={paymentMethod === 'card'}
+                                onChange={() => setPaymentMethod('card')}
+                            />
+                            Credit Card
+                        </label>
+                    </div>
+                    <div className="payment-logos">
+                        <img src={mastercardImg} alt="MasterCard" />
+                        <img src={payoneerImg}  alt="Payoneer" />
+                        <img src={visaImg}  alt="Visa" />
+                        <img src={maestroImg}  alt="Maestro" />
+                    </div>
+                    <button className='place-order-button' onClick={paymentMethod === 'card' ? navigateToStripeCheckout : handlePlaceOrderCashOnDelivery}>
+                        Place Order
+                    </button>
+                                {/* Snackbar for success message */}
+            <Snackbar
+                open={showSuccessSnackbar}
+                autoHideDuration={6000} // Adjust duration as needed
+                onClose={() => setShowSuccessSnackbar(false)}
+            >
+                <Alert
+                    onClose={() => setShowSuccessSnackbar(false)}
+                    severity="success"
+                    sx={{ width: '100%' }}
+                >
+                    Order has been created successfully
+                </Alert>
+            </Snackbar>
                 </div>
             </div>
-        </div>
-        <button className="proceed-to-payment-button" onClick={() => {
-            if (!validateForm()) {
-                return;
-          }    
-          const calculatedTotal = calculateTotal();
-            setTotal(calculatedTotal); 
-            navigateToStripeCheckout();   
-}}>PROCEED TO PAYMENT</button>
-      </div>
-    </form>
-  )
-}
+        </form>
+    );
+};
 
 export default PlaceOrder;
-
