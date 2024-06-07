@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './PlaceOrder.css'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate,useLocation } from 'react-router-dom'
+import { loadStripe } from '@stripe/stripe-js';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 const PlaceOrder = () => {
     const navigate = useNavigate();
-    
+    const location = useLocation();
+    const stripePromise = loadStripe('pk_test_51P6u1x011mWT6ad4nb8H1uIBx9KKPLrjNxVuJ5TPXoAdeVrjkucxdAP7zoRMUsSGntXoOtDh01FbgCRizoTfwWAK00c00ZOowc');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
@@ -15,12 +19,29 @@ const PlaceOrder = () => {
     const [country, setCountry] = useState('');
     const [phone, setPhone] = useState('');
     const [promoCode, setPromoCode] = useState('');
-    const [subtotal, setSubtotal] = useState(100); 
-    const [deliveryFee] = useState(5);
     const [discount, setDiscount] = useState(0);
     const [total, setTotal] = useState(0);
     const [isSaved, setIsSaved] = useState(false); 
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+
+// Retrieve the subtotal from location state
+const { subtotal } = location.state || { subtotal: 0 };
+const deliveryFee = subtotal === 0 ? 0 : 5;
+
+useEffect(() => {
+  const parsedSubtotal = parseFloat(subtotal);
+  if (!isNaN(parsedSubtotal)) {
+    const calculatedTotal = parsedSubtotal + deliveryFee - discount;
+    setTotal(calculatedTotal);
+  }
+}, [subtotal, deliveryFee, discount]);
+
+    // Calculate the total
+    useEffect(() => {
+        const calculatedTotal = subtotal + 5 - 0; // Include delivery fee and discount
+        setTotal(calculatedTotal);
+    }, [subtotal]);
 
     useEffect(() => {
         const calculatedTotal = subtotal + deliveryFee - discount;
@@ -92,6 +113,30 @@ const PlaceOrder = () => {
         setShowSuccessMessage(true); 
     };
 
+    const navigateToStripeCheckout = async () => {
+        const stripe = await stripePromise;
+
+        try {
+            const response = await axios.post('http://localhost:4000/api/stripe/create-checkout-session', {
+                userId: 'exampleUserId', // Replace with actual userId if needed
+                cartItems: [
+                    { name: 'Item 1', price: 1000, cartQuantity: 1, image: 'image_url', desc: 'Description 1', id: 'item1' },
+                    { name: 'Item 2', price: 2000, cartQuantity: 2, image: 'image_url', desc: 'Description 2', id: 'item2' }
+                ]
+            });
+
+            const { sessionId } = response.data;
+
+            const result = await stripe.redirectToCheckout({ sessionId });
+
+            if (result.error) {
+                console.error('Stripe checkout error:', result.error.message);
+            }
+        } catch (error) {
+            console.error('Error during checkout process:', error.message);
+        }
+    };
+
     const validateForm = () => {
         return (
             firstName.trim() !== '' &&
@@ -117,6 +162,7 @@ const PlaceOrder = () => {
     const calculateTotal = () => {
         return subtotal + deliveryFee - discount;
     };
+
 
     useEffect(() => {
         setIsSaved(false); 
@@ -190,13 +236,7 @@ const PlaceOrder = () => {
           }    
           const calculatedTotal = calculateTotal();
             setTotal(calculatedTotal); 
-            navigate('/transaction/Payment', {
-               state: {
-                  subtotal: subtotal,
-                  deliveryFee: deliveryFee,
-                  total: calculatedTotal,
-        }
-    });
+            navigateToStripeCheckout();   
 }}>PROCEED TO PAYMENT</button>
       </div>
     </form>
