@@ -35,7 +35,8 @@ const ShoppingCart = () => {
   };
   const handleCheckout = () => {
     const subtotal = calculateTotalPrice();
-    navigate('/transaction/checkout', { state: { subtotal } });
+    const cartItems = products.filter(product => product.quantity > 0);
+    navigate('/transaction/checkout', { state: { subtotal, cartItems } });
   };
 
 
