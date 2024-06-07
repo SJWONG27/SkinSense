@@ -10,6 +10,7 @@ const getCarts = async (req, res) => {
 };
 
 const addItemToCart = async (req, res) => {
+  console.log('Request Body:', req.body);
   const itemId = req.params.productID;
   const { userId, quantity } = req.body;
   try {

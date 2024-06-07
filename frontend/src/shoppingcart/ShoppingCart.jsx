@@ -1,19 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import product1 from '../assets/images/img_product1.jpeg';
 import product2 from '../assets/images/img_product2.jpg';
 import './cart.css';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 
 const ShoppingCart = () => {
   // State to store products and their quantities
   const navigate = useNavigate();
 
-  const [products, setProducts] = useState([
+/*   const [products, setProducts] = useState([
     { id: 1, name: 'Product 1', price: 10, quantity: 0, image: product1 },
     { id: 2, name: 'Product 2', price: 20, quantity: 0, image: product2 },
     { id: 3, name: 'Product 3', price: 15, quantity: 0, image: product1 },
-  ]);
+  ]); */
+
+  const [products, setProducts] = useState([]);
+  // const userId = '6662b8ba8f55477ed2e6c24a';
+  const { userId } = useParams();
+
+  useEffect(() => {
+    const fetchCartData = async () => {
+      try {
+        const response = await fetch(`/cart/${userId}`);
+        // const response = await fetch('http://localhost:4000/cart/6662b8ba8f55477ed2e6c24a');
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error('Error fetching cart data:', error);
+      }
+    };
+
+    fetchCartData();
+  }, [userId]);
 
   // Function to update quantity of a product
   const updateItemQuantity = (id, newQuantity) => {

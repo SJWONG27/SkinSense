@@ -48,6 +48,40 @@ router.get('/cart-total', async (req, res) => {
   }
 });
 
+// GET request to get cart data
+router.get('/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Find the cart for the user
+    const cart = await Cart.findOne({ userId });
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    // Get product details for items in the cart
+    const productIds = cart.items.map(item => item.itemId);
+    const products = await Product.find({ '_id': { $in: productIds } });
+
+    const cartItems = cart.items.map(item => {
+      const product = products.find(p => p._id.toString() === item.itemId);
+      return {
+        id: product._id,
+        name: product.name,
+        price: product.price,
+        image: product.img,
+        quantity: item.quantity,
+      };
+    });
+
+    res.json(cartItems);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Import other cart routes from the controller
 const { getCarts, addItemToCart, removeItemFromCart, updateItemQuantity } = require('../controllers/CartController');
 
