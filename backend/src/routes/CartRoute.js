@@ -53,7 +53,7 @@ const { getCarts, addItemToCart, removeItemFromCart, updateItemQuantity } = requ
 
 // Other cart routes
 router.get('/', getCarts);
-router.post('/add', addItemToCart);
+router.post('/add/:productID', addItemToCart);
 router.delete('/remove', removeItemFromCart);
 router.put('/update', updateItemQuantity);
 

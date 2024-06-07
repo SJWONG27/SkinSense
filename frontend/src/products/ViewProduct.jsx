@@ -98,6 +98,7 @@ function ViewProduct(){
 
   const handleClick = (newState) => () => {
     setState({ ...newState, open: true });
+    addToCartFunc();
   };
 
   const handleClose = () => {
@@ -160,6 +161,26 @@ function ViewProduct(){
         }
 
   }
+
+  async function addToCartFunc() {
+    const response = await fetch(`http://localhost:4000/cart/add/${params.id.toString()}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+          userId: userID,
+          quantity: 1
+      })
+
+    });
+    //console.log(response)
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      console.error(message);
+      return;
+    }
+}
   
   
     const handleSubmit = (event) => {

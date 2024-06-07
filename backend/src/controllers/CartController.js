@@ -10,7 +10,8 @@ const getCarts = async (req, res) => {
 };
 
 const addItemToCart = async (req, res) => {
-  const { userId, itemId, quantity } = req.body;
+  const itemId = req.params.productID;
+  const { userId, quantity } = req.body;
   try {
     let cart = await Cart.findOne({ userId });
     if (cart) {
