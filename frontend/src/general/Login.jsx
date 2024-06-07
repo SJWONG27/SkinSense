@@ -44,11 +44,12 @@ const Login = () => {
         { withCredentials: true }
       );
       console.log(data);
-      const { success , message, token, user } = data;
+      const { success , message, _id, token, user } = data;
       if(success){
         handleSuccess(message);
         document.cookie = `token=${token}; path=/; HttpOnly`; 
         localStorage.setItem("email", JSON.stringify(email))    // store the currently logged-in email 
+        localStorage.setItem("userId", JSON.stringify(_id));
         setTimeout(() =>{
           navigate("/buyerPage");
         }, 1000);

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import product1 from '../assets/images/img_product1.jpeg';
 import product2 from '../assets/images/img_product2.jpg';
 import './cart.css';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../general/UserContext';
 
 
 const ShoppingCart = () => {
@@ -17,15 +18,27 @@ const ShoppingCart = () => {
 
   const [products, setProducts] = useState([]);
   // const userId = '6662b8ba8f55477ed2e6c24a';
-  const { userId } = useParams();
+
+  const userId = localStorage.getItem('userId');
+  const id = JSON.parse(localStorage.getItem('id')); // this line works with line const url = `http://localhost:4000/cart/${id}`;
 
   useEffect(() => {
     const fetchCartData = async () => {
       try {
-        const response = await fetch(`/cart/${userId}`);
+        if (!userId) return; // Exit early if userId is not available
+        if (typeof userId !== 'string') throw new Error('Not string');
+        const userIdWithoutQuotes = userId.replace(/"/g, ''); // ma de ji bai bcuz of this line of code take me half of my day
+        const url = `http://localhost:4000/cart/${userIdWithoutQuotes}`;
+        //const url = `http://localhost:4000/cart/${id}`;
+        console.log(url)
+
+        const response = await fetch(url);
         // const response = await fetch('http://localhost:4000/cart/6662b8ba8f55477ed2e6c24a');
+        if (!response.ok) {
+          throw new Error('Failed to fetch cart data');
+        }
         const data = await response.json();
-        setProducts(data);
+        setProducts(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching cart data:', error);
       }
@@ -63,7 +76,8 @@ const ShoppingCart = () => {
       <div className='cart'>
           {products.map((product) => (
             <div className='productCartContainer' key={product.id}>
-              <img src={product.image} alt={product.name} style={{ width: '100px', height: '100px' }} />
+              
+              <img src={product.image.replace('../frontend/', '')} alt={product.name} style={{ width: '100px', height: '100px' }} />
               <div className='productCartContainer2'>
                 {product.name} - ${product.price} 
                 <label>
