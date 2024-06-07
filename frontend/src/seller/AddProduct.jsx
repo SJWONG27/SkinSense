@@ -1,8 +1,17 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 function AddProduct() {
+
+  const [addSnackbar, setAddSnackbar] = useState(false);
+
+  const handleAddSnackbarClose = () => {
+    setAddSnackbar(false);
+  };
+
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
@@ -42,6 +51,8 @@ function AddProduct() {
         method:"POST",
         body: formData
       });
+
+      setAddSnackbar(true)
 
     } catch (error) {
       console.error('Upload error:', error);
@@ -108,6 +119,19 @@ function AddProduct() {
         </div>
       </div>
       </form>
+
+      <Snackbar
+        open={addSnackbar}
+        anchorOrigin={{ vertical:"bottom", horizontal:"right" }}
+        autoHideDuration={1500}
+        onClose={handleAddSnackbarClose}>
+          <Alert
+            severity="success"
+            variant="filled"
+            >
+            Successfully added product
+          </Alert>
+        </Snackbar>
 
     </div>
   )
