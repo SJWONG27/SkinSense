@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react';
-import product1 from '../assets/images/img_product1.jpeg';
-import product2 from '../assets/images/img_product2.jpg';
 import './cart.css';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../general/UserContext';
@@ -9,12 +7,6 @@ import { UserContext } from '../general/UserContext';
 const ShoppingCart = () => {
   // State to store products and their quantities
   const navigate = useNavigate();
-
-/*   const [products, setProducts] = useState([
-    { id: 1, name: 'Product 1', price: 10, quantity: 0, image: product1 },
-    { id: 2, name: 'Product 2', price: 20, quantity: 0, image: product2 },
-    { id: 3, name: 'Product 3', price: 15, quantity: 0, image: product1 },
-  ]); */
 
   const [products, setProducts] = useState([]);
   // const userId = '6662b8ba8f55477ed2e6c24a';
@@ -27,7 +19,7 @@ const ShoppingCart = () => {
       try {
         if (!userId) return; // Exit early if userId is not available
         if (typeof userId !== 'string') throw new Error('Not string');
-        const userIdWithoutQuotes = userId.replace(/"/g, ''); // ma de ji bai bcuz of this line of code take me half of my day
+        const userIdWithoutQuotes = userId.replace(/"/g, ''); 
         const url = `http://localhost:4000/cart/${userIdWithoutQuotes}`;
         //const url = `http://localhost:4000/cart/${id}`;
         console.log(url)
@@ -65,10 +57,39 @@ const ShoppingCart = () => {
   const calculateTotalPrice = () => {
     return products.reduce((total, product) => total + (product.price * product.quantity), 0);
   };
-  const handleCheckout = () => {
+  
+  const handleCheckout = async () => {
     const subtotal = calculateTotalPrice();
     const cartItems = products.filter(product => product.quantity > 0);
-    navigate('/transaction/checkout', { state: { subtotal, cartItems } });
+
+    const orderData = {
+      userId,
+      items: cartItems,
+      total: subtotal,
+    };
+
+    try{
+      const response = await fetch('http://localhost:4000/orders', {
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create order');
+      }
+
+      const result = await response.json();
+      console.log('Order created:', result);
+
+      navigate('/transaction/checkout', { state: { subtotal, cartItems } });
+    } catch(err){
+      console.error('Error creating order: ', err)
+    }
+
+    
   };
 
 

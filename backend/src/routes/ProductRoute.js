@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
 });
 
 router.patch("/:id",  async (req, res) => {
-  try {
+  try { 
     if (req.body.star !== undefined) {
       // Update stars
       const updates = { $set: { stars: req.body.star } };
