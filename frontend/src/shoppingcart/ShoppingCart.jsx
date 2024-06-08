@@ -67,36 +67,41 @@ const ShoppingCart = () => {
   const handleCheckout = async () => {
     const subtotal = calculateTotalPrice();
     const cartItems = products.filter(product => product.quantity > 0);
-
+  
     const orderData = {
-      userId,
-      items: cartItems,
+      userId, // Include userId in order data
+      items: cartItems.map(product => ({
+        itemId: product.id, // Use itemId instead of ObjectId
+        name: product.name,
+        img: product.image,
+        quantity: product.quantity,
+        price: product.price // Add price if needed
+      })),
       total: subtotal,
     };
-
-    try{
+  
+    try {
       const response = await fetch('http://localhost:4000/orders', {
         method: 'POST',
-        headers:{
+        headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(orderData),
       });
-
+  
       if (!response.ok) {
         throw new Error('Failed to create order');
       }
-
+  
       const result = await response.json();
       console.log('Order created:', result);
-
+  
       navigate('/transaction/checkout', { state: { subtotal, cartItems } });
-    } catch(err){
-      console.error('Error creating order: ', err)
+    } catch (err) {
+      console.error('Error creating order: ', err);
     }
-
-    
   };
+  
 
   const updateCartQuantityFunc = async (productId, newQuantity) => {
     const response = await fetch(`http://localhost:4000/cart/update`, {

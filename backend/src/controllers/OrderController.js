@@ -3,6 +3,7 @@ const Order = require('../models/orderModel');
 const createOrder = async (req, res) => {
   try {
     const {
+      userId,
       items,
       deliveryInfo,
       paymentMethod,
@@ -11,7 +12,14 @@ const createOrder = async (req, res) => {
     } = req.body;
 
     const order = new Order({
-      items,
+      userId, // Include userId in order
+      items: items.map(item => ({
+        itemId: item.itemId, // Use itemId
+        name: item.name,
+        img: item.img,
+        quantity: item.quantity,
+        price: item.price // Include price if needed
+      })),
       deliveryInfo,
       paymentMethod,
       paymentId,
@@ -25,8 +33,6 @@ const createOrder = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-
-// Add more controller functions like getOrder, updateOrder, etc. based on your requirements
 
 module.exports = {
   createOrder

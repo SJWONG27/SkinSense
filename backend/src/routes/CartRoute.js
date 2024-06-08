@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Cart = require('../models/cartModel');
+const Cart = require('../models/CartModel');
 const Product = require('../models/ProductModel'); // Assuming you have a Product model
 
 // GET request to calculate cart total
