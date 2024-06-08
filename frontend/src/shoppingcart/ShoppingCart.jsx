@@ -40,17 +40,23 @@ const ShoppingCart = () => {
   }, [userId]);
 
   // Function to update quantity of a product
-  const updateItemQuantity = (id, newQuantity) => {
+  const updateItemQuantity = (productId, newQuantity) => {
+
+    updateCartQuantityFunc(productId, newQuantity);
+
     setProducts(prevProducts =>
       prevProducts.map(product =>
-        product.id === id ? { ...product, quantity: newQuantity } : product
+        product.id === productId ? { ...product, quantity: newQuantity } : product
       )
-    );
+    );     
   };
 
   // Function to remove a product from the cart
-  const removeProduct = (id) => {
-    setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
+  const removeProduct = (productId) => {
+
+    deleteFromCartFunc(productId);
+
+    setProducts(prevProducts => prevProducts.filter(product => product.id !== productId));
   };
 
   // Function to calculate total price of items in the cart
@@ -90,6 +96,47 @@ const ShoppingCart = () => {
     }
 
     
+  };
+
+  const updateCartQuantityFunc = async (productId, newQuantity) => {
+    const response = await fetch(`http://localhost:4000/cart/update`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: id,
+        itemId: productId,
+        quantity: newQuantity
+      })
+    });
+
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      console.error(message);
+      return;
+    }
+
+  };
+
+  const deleteFromCartFunc = async (productId) => {
+    const response = await fetch(`http://localhost:4000/cart/remove`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: id,
+        itemId: productId
+      })
+    });
+
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      console.error(message);
+      return;
+    }
+
   };
 
 

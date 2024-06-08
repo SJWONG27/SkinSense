@@ -180,7 +180,7 @@ function ViewProduct(){
       console.error(message);
       return;
     }
-}
+  }
   
   
     const handleSubmit = (event) => {
