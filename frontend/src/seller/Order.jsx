@@ -1,26 +1,52 @@
-import React , { useState }from 'react'
-function Order() {
+import React, { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../general/UserContext';
+import axios from 'axios';
 
-  const [orders, setOrders] = useState([
-    { id: 1, customer: 'John Doe', status: 'Processing' },
-    { id: 2, customer: 'Jane Smith', status: 'Shipped' },
-    { id: 3, customer: 'Michael Johnson', status: 'Delivered' },
-  ]);
+function Order() {
+  const [orders, setOrders] = useState([]);
+  const { user } = useContext(UserContext); // Get the logged-in user's info
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (user && user.id ) {
+        try {
+          console.log('Fetching orders for user:', user.id);
+          const response = await axios.get(`http://localhost:4000/orders?sellerID=${user.id}`);
+          console.log('Fetched orders:', response.data);
+          setOrders(response.data);
+        } catch (error) {
+          console.error('Error fetching orders:', error);
+        }
+      } else{
+        console.log('user not available')
+      }
+    };
+
+    fetchOrders();
+  }, [user]);
 
   // Function to update order status
-  const updateOrderStatus = (orderId, newStatus) => {
-    const updatedOrders = orders.map(order => {
-      if (order.id === orderId) {
-        return { ...order, status: newStatus };
-      }
-      return order;
-    });
-    setOrders(updatedOrders);
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      const response = await axios.patch(`http://localhost:4000/orders/${orderId}`, {
+        deliveryStatus: newStatus,
+      });
+
+      const updatedOrder = response.data;
+      const updatedOrders = orders.map(order => {
+        if (order._id === orderId) {
+          return { ...order, items: order.items.map(item => ({ ...item, deliveryStatus: newStatus })) };
+        }
+        return order;
+      });
+      setOrders(updatedOrders);
+    } catch (error) {
+      console.error('Error updating order status:', error);
+    }
   };
 
   return (
-    
-      <div className='Order'>
+    <div className='Order'>
       <div className='pagetitle'>
         <h2>Manage Orders</h2>
       </div>
@@ -35,31 +61,35 @@ function Order() {
             </tr>
           </thead>
           <tbody>
-            {orders.map(order => (
-              <tr key={order.id}>
-                <td>{order.id}</td>
-                <td>{order.customer}</td>
-                <td>{order.status}</td>
-                <td>
-                  <button onClick={() => updateOrderStatus(order.id, 'Processing')}>
-                    Mark as Processing
-                  </button>
-                  <button onClick={() => updateOrderStatus(order.id, 'Shipped')}>
-                    Mark as Shipped
-                  </button>
-                  <button onClick={() => updateOrderStatus(order.id, 'Delivered')}>
-                    Mark as Delivered
-                  </button>
-                </td>
+            {orders.length > 0 ? (
+              orders.map(order => (
+                <tr key={order._id}>
+                  <td>{order._id}</td>
+                  <td>{order.userId}</td>
+                  <td>{order.items.map(item => item.deliveryStatus).join(', ')}</td>
+                  <td>
+                    <button onClick={() => updateOrderStatus(order._id, 'Processing')}>
+                      Mark as Processing
+                    </button>
+                    <button onClick={() => updateOrderStatus(order._id, 'Shipped')}>
+                      Mark as Shipped
+                    </button>
+                    <button onClick={() => updateOrderStatus(order._id, 'Delivered')}>
+                      Mark as Delivered
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4">No orders found.</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
-        </div>
       </div>
-    
-      
-  )
+    </div>
+  );
 }
 
-export default Order
+export default Order;

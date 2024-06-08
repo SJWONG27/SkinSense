@@ -20,7 +20,6 @@ function ViewProduct(){
   const params = useParams();
   const [username, setUsername] = useState("");
   const [comments, setComments] = useState([]);
-
   const [userID, setUserID] = useState("");
 
   // to get the user ID, to trace name of commenter
@@ -60,7 +59,8 @@ function ViewProduct(){
         var userID = comment.userID;
         const response = await fetch(`http://localhost:4000/user/userID/${userID}`);
         const result = await response.json();
-        comment.username = result.username
+        comment.username = result.username;
+
       }
       setComments(result.comments);
     }
@@ -170,13 +170,13 @@ function ViewProduct(){
       },
       body: JSON.stringify({
           userId: userID,
-          quantity: 1
+          quantity: 1,
       })
 
     });
     //console.log(response)
     if (!response.ok) {
-      const message = `An error occurred: ${response.statusText}`;
+      const message = `An error occurred: ${response.statusText}`; 
       console.error(message);
       return;
     }

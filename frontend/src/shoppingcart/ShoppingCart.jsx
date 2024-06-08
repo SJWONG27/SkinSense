@@ -69,13 +69,14 @@ const ShoppingCart = () => {
     const cartItems = products.filter(product => product.quantity > 0);
   
     const orderData = {
-      userId, // Include userId in order data
+      userId: userId.replace(/"/g, ''),// Include userId in order data
       items: cartItems.map(product => ({
         itemId: product.id, // Use itemId instead of ObjectId
         name: product.name,
         img: product.image,
         quantity: product.quantity,
-        price: product.price // Add price if needed
+        price: product.price,
+        sellerID: product.sellerID
       })),
       total: subtotal,
     };

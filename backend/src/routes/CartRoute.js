@@ -71,6 +71,7 @@ router.get('/:userId', async (req, res) => {
         name: product.name,
         price: product.price,
         image: product.img,
+        sellerID: product.sellerID,
         quantity: item.quantity,
       };
     });

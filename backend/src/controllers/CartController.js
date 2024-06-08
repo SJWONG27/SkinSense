@@ -1,4 +1,5 @@
 const Cart = require('../models/CartModel');
+const Product = require('../models/ProductModel');
 
 const getCarts = async (req, res) => {
   try {
@@ -14,16 +15,24 @@ const addItemToCart = async (req, res) => {
   const itemId = req.params.productID;
   const { userId, quantity } = req.body;
   try {
+    // Fetch the product details to get sellerID
+    const product = await Product.findById(itemId);
+    if (!product) {
+      return res.status(404).send('Product not found');
+    }
+    
+    const sellerID = product.sellerID;
+
     let cart = await Cart.findOne({ userId });
     if (cart) {
       const itemIndex = cart.items.findIndex(item => item.itemId === itemId);
       if (itemIndex > -1) {
         cart.items[itemIndex].quantity += quantity;
       } else {
-        cart.items.push({ itemId, quantity });
+        cart.items.push({ itemId, quantity, sellerID });
       }
     } else {
-      cart = new Cart({ userId, items: [{ itemId, quantity }] });
+      cart = new Cart({ userId, items: [{ itemId, quantity, sellerID }] });
     }
     await cart.save();
     res.status(200).send(cart);

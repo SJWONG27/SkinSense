@@ -1,14 +1,19 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  userId: { type: String, required: true }, // Add userId to the schema
+  userId: { type: String, required: true }, 
   items: [
     {
-      itemId: { type: String, required: true }, // Use itemId instead of productId
+      itemId: { type: String, required: true }, 
       name: String,
       img: String,
       quantity: Number,
-      price: Number // Include price if needed
+      price: Number,
+      deliveryStatus: {
+        type: String,
+        default: 'Processing',
+      },
+      sellerID: { type: String, required: true },
     }
   ],
   deliveryInfo: {

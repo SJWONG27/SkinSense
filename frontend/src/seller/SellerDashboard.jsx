@@ -6,11 +6,13 @@ import MyProduct from './MyProduct';
 import AddProduct from './AddProduct'; 
 import ChatManagement from './ChatManagement'; 
 import Finance from './Finance'; 
-import "./sellerIndex.css"
+import "./sellerIndex.css";
+import { UserProvider } from '../general/UserContext';
 
 
 const MainLayout = () => {
   return (
+    <UserProvider>
     <div className="MainContainer">
       <div className="SidebarContainer">
         <SideBar />
@@ -25,6 +27,7 @@ const MainLayout = () => {
         </Routes>
       </div>
     </div>
+    </UserProvider>
   );
 };
 

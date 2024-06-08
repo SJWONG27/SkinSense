@@ -1,4 +1,5 @@
 const Order = require('../models/orderModel');
+const Product = require('../models/ProductModel');
 
 const createOrder = async (req, res) => {
   try {
@@ -11,15 +12,25 @@ const createOrder = async (req, res) => {
       amount
     } = req.body;
 
-    const order = new Order({
-      userId, // Include userId in order
-      items: items.map(item => ({
-        itemId: item.itemId, // Use itemId
+    // Fetch product details to get sellerID for each item
+    const itemsWithSellerID = await Promise.all(items.map(async (item) => {
+      const product = await Product.findById(item.itemId);
+      if (!product) {
+        throw new Error(`Product with ID ${item.itemId} not found`);
+      }
+      return {
+        itemId: item.itemId,
         name: item.name,
         img: item.img,
         quantity: item.quantity,
-        price: item.price // Include price if needed
-      })),
+        price: item.price,
+        sellerID: product.sellerID 
+      };
+    }));
+
+    const order = new Order({
+      userId, // Include userId in order
+      items: itemsWithSellerID, // Use items with sellerID
       deliveryInfo,
       paymentMethod,
       paymentId,
@@ -33,6 +44,8 @@ const createOrder = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
 
 module.exports = {
   createOrder
