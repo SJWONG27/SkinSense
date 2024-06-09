@@ -21,6 +21,16 @@ function Chat() {
     fetchCurrentUser();
   }, []);
 
+  const debounce = (func, delay) => {
+    let timeoutId;
+    return function (...args) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        func.apply(this, args);
+      }, delay);
+    };
+  };
+
   // Fetch users from the backend
   useEffect(() => {
     const fetchUsers = async () => {
@@ -36,7 +46,11 @@ function Chat() {
       }
     };
 
-    fetchUsers();
+    const debouncedFetchUsers = debounce(fetchUsers, 1); // Adjust debounce delay as needed
+    if (currentUser) {
+      debouncedFetchUsers();
+    }
+
   }, [currentUser]); //maybe can add dependency here
 
   const handleUserClick = (user) => {
@@ -60,7 +74,7 @@ function Chat() {
 }
 
 function ChatList({ users, onUserClick }) {
-  const [selectedStatus, setSelectedStatus] = useState('');
+  // const [selectedStatus, setSelectedStatus] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(users)
 
