@@ -1,68 +1,87 @@
-.my-order-container {
-  margin: 20px auto;
+
+
+/* Container for the MyOrder component */
+.MyOrder {
   padding: 20px;
-  max-width: 800px;
-  text-align: center; /* Center align the text */
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-h1 {
-  font-size: 24px; /* Adjust the font size */
-  margin-bottom: 20px; /* Add some bottom margin */
+.ordertable {
+  overflow-x: auto;
 }
 
-.order-table {
+table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.order-table th,
-.order-table td {
-  padding: 8px;
+table thead {
+  background-color: #f2f2f2;
+}
+
+table th, table td {
+  padding: 15px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
-.order-table th {
+table th {
   background-color: #f2f2f2;
+  font-weight: 500;
 }
 
-.order-table img {
-  width: 50px;
+table tr:hover {
+  background-color: #f9f9f9;
+}
+
+table th:first-child, table td:first-child {
+  padding-left: 20px;
+}
+
+table th:last-child, table td:last-child {
+  padding-right: 20px;
+}
+
+img {
+  border-radius: 4px;
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
   height: auto;
 }
 
-.order-table td img {
-  display: block;
-  margin: 0 auto;
+.payment-method {
+  padding: 5px 10px;
+  border-radius: 3px;
+  color: #fff;
+  font-size: 0.9rem;
+  text-transform: capitalize;
 }
 
-.order-table td {
-  vertical-align: middle;
+.payment-method.card {
+  background-color: #007bff;
 }
 
-.order-table td:first-child {
-  padding-left: 0;
+.payment-method.cash {
+  background-color: #000;
 }
 
-.order-table td:last-child {
-  padding-right: 0;
+.status {
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 0.9rem;
 }
 
-.order-table td,
-.order-table th {
-  padding-left: 10px;
-  padding-right: 10px;
+.status.yes {
+  background-color: #28a745;
+  color: #fff;
 }
 
-.order-table tr:last-child td {
-  border-bottom: none;
+.status.no {
+  background-color: #dc3545;
+  color: #fff;
 }
-
-.order-table tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-.order-table tr:hover {
-  background-color: #ddd;
-}
-
