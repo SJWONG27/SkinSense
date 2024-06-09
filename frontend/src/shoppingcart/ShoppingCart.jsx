@@ -77,6 +77,7 @@ const ShoppingCart = () => {
         quantity: product.quantity,
         price: product.price,
         sellerID: product.sellerID,
+        paymentMethod: 'Credit Card',
       })),
       total: subtotal,
     };

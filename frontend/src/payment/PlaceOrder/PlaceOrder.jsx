@@ -24,7 +24,7 @@ const PlaceOrder = () => {
     const [phone, setPhone] = useState('');
     const [promoCode, setPromoCode] = useState('');
     const [total, setTotal] = useState(0);
-    const [paymentMethod, setPaymentMethod] = useState('cash'); // Default to cash on delivery
+    const [paymentMethod, setPaymentMethod] = useState(''); 
     const [isSaved, setIsSaved] = useState(false); 
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const [discount, setDiscount] = useState(0);
@@ -109,6 +109,7 @@ const PlaceOrder = () => {
     };
 
     const navigateToStripeCheckout = async () => {
+
         const stripe = await stripePromise;
 
         try {
@@ -119,7 +120,7 @@ const PlaceOrder = () => {
                     price: item.price,
                     cartQuantity: item.quantity,
                     image: item.image,
-                    id: item.id
+                    id: item.id,
                 }))
             };
 
@@ -141,6 +142,42 @@ const PlaceOrder = () => {
         }
     };
 
+    const handlePlaceOrder = async () => {
+        const deliveryInfo = {
+            firstName,
+            lastName,
+            email,
+            street,
+            city,
+            state,
+            zipCode,
+            country,
+            phone
+        };
+    
+        const orderData = {
+            userId: 'exampleUserId', // Replace with the actual user ID
+            cartItems: cartItems.map(item => ({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                image: item.image,
+                id: item.id
+            })),
+            paymentMethod: paymentMethod
+        };
+    
+        try {
+            await axios.post('http://localhost:4000/orders', orderData);
+            setShowSuccessSnackbar(true);
+            setTimeout(() => {
+                setShowSuccessSnackbar(false);
+                navigate('/transaction/Success');
+            }, 3000); // Adjust the duration as needed (in milliseconds)
+        } catch (error) {
+            console.error('Error placing order:', error);
+        }
+    };
     const handlePlaceOrderCashOnDelivery = () => {
         // Your logic for placing the order with cash on delivery goes here
         
@@ -240,6 +277,7 @@ const PlaceOrder = () => {
                                 value="cash"
                                 checked={paymentMethod === 'cash'}
                                 onChange={() => setPaymentMethod('cash')}
+                                onClick={handlePlaceOrder}
                             />
                             Cash on delivery
                         </label>
@@ -250,6 +288,7 @@ const PlaceOrder = () => {
                                 value="card"
                                 checked={paymentMethod === 'card'}
                                 onChange={() => setPaymentMethod('card')}
+                                onClick={handlePlaceOrder}
                             />
                             Credit Card
                         </label>
