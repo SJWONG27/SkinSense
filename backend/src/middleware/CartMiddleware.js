@@ -1,5 +1,5 @@
 // src/middleware/CartMiddleware.js
-const { CartModel } = require('../models/cartModel');
+const { CartModel } = require('../models/CartModel');
 const { ProductModel } = require('../models/ProductModel');
 
 const cartExists = async (req, res, next) => {

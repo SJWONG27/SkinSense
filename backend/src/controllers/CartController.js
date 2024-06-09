@@ -22,6 +22,7 @@ const addItemToCart = async (req, res) => {
     }
     
     const sellerID = product.sellerID;
+    const name = product.name;
 
     let cart = await Cart.findOne({ userId });
     if (cart) {
@@ -29,10 +30,10 @@ const addItemToCart = async (req, res) => {
       if (itemIndex > -1) {
         cart.items[itemIndex].quantity += quantity;
       } else {
-        cart.items.push({ itemId, quantity, sellerID });
+        cart.items.push({ itemId, quantity, sellerID, name });
       }
     } else {
-      cart = new Cart({ userId, items: [{ itemId, quantity, sellerID }] });
+      cart = new Cart({ userId, items: [{ itemId, quantity, sellerID, name }] });
     }
     await cart.save();
     res.status(200).send(cart);

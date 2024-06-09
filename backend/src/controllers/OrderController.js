@@ -29,8 +29,8 @@ const createOrder = async (req, res) => {
     }));
 
     const order = new Order({
-      userId, // Include userId in order
-      items: itemsWithSellerID, // Use items with sellerID
+      userId, 
+      items: itemsWithSellerID, 
       deliveryInfo,
       paymentMethod,
       paymentId,

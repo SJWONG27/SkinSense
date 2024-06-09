@@ -69,19 +69,20 @@ const ShoppingCart = () => {
     const cartItems = products.filter(product => product.quantity > 0);
   
     const orderData = {
-      userId: userId.replace(/"/g, ''),// Include userId in order data
+      userId: userId.replace(/"/g, ''), // Include userId in order data
       items: cartItems.map(product => ({
         itemId: product.id, // Use itemId instead of ObjectId
         name: product.name,
         img: product.image,
         quantity: product.quantity,
         price: product.price,
-        sellerID: product.sellerID
+        sellerID: product.sellerID,
       })),
       total: subtotal,
     };
   
     try {
+      // Create the order
       const response = await fetch('http://localhost:4000/orders', {
         method: 'POST',
         headers: {
@@ -97,11 +98,28 @@ const ShoppingCart = () => {
       const result = await response.json();
       console.log('Order created:', result);
   
+      // Transfer items from cart to seller order
+      const transferResponse = await fetch('http://localhost:4000/sellerorders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: orderData.userId }),
+      });
+  
+      if (!transferResponse.ok) {
+        throw new Error('Failed to transfer items to seller order');
+      }
+  
+      const transferResult = await transferResponse.json();
+      console.log('Items transferred to seller order:', transferResult);
+  
       navigate('/transaction/checkout', { state: { subtotal, cartItems } });
     } catch (err) {
       console.error('Error creating order: ', err);
     }
   };
+  
   
 
   const updateCartQuantityFunc = async (productId, newQuantity) => {
