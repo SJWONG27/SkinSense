@@ -2,52 +2,43 @@ const express = require('express');
 const router = express.Router();
 const Cart = require('../models/CartModel'); // Adjust the path according to your project structure
 const SellerOrder = require('../models/SellerOrderModel'); // Adjust the path according to your project structure
-
-// Transfer items from Cart to SellerOrder
 router.post('/', async (req, res) => {
-  const { userId } = req.body;
-  console.log(`Received userId for transfer: ${userId}`);
-
-  try {
-    // Fetch items from the Cart model for the specified user
-    const cart = await Cart.findOne({ userId });
-
-    if (!cart) {
-      console.log('Cart not found');
-      return res.status(404).json({ message: 'Cart not found' });
+    const { userId } = req.body;
+    console.log(`Received userId for transfer: ${userId}`);
+  
+    try {
+      // Fetch items from the Cart model for the specified user
+      const cart = await Cart.findOne({ userId });
+  
+      if (!cart) {
+        console.log('Cart not found');
+        return res.status(404).json({ message: 'Cart not found' });
+      }
+  
+      // Transform items to match the SellerOrder schema
+      const sellerOrders = cart.items.map(item => ({
+        userId: cart.userId,
+        itemId: item.itemId,
+        name: item.name,
+        quantity: item.quantity,
+        deliveryStatus: 'Processing',
+        sellerID: item.sellerID,
+      }));
+  
+      console.log('Transformed seller orders:', sellerOrders);
+  
+      // Insert the transformed data into the SellerOrder model
+      await SellerOrder.insertMany(sellerOrders);
+  
+      // Optionally, clear the cart after transferring the items
+      await Cart.updateOne({ userId }, { items: [] });
+  
+      res.status(200).json({ message: 'Items transferred successfully' });
+    } catch (error) {
+      console.error('Error transferring items:', error);
+      res.status(500).json({ message: 'Error transferring items' });
     }
-
-    const filteredItems = cart.items.filter(item => item.sellerID === userId);
-    console.log(`Filtered items for sellerID ${userId}:`, filteredItems);
-
-    if (filteredItems.length === 0) {
-      return res.status(404).json({ message: 'No items found for the given sellerID' });
-    }
-
-    // Transform items to match the SellerOrder schema
-    const sellerOrders = filteredItems.map(item => ({
-      userId: cart.userId,
-      itemId: item.itemId,
-      name: item.name,
-      quantity: item.quantity,
-      deliveryStatus: 'Processing',
-      sellerID: item.sellerID,
-    }));
-
-    console.log('Transformed seller orders:', sellerOrders);
-
-    // Insert the transformed data into the SellerOrder model
-    await SellerOrder.insertMany(sellerOrders);
-
-    // Optionally, clear the cart after transferring the items
-    await Cart.updateOne({ userId }, { items: cart.items.filter(item => item.sellerID !== userId) });
-
-    res.status(200).json({ message: 'Items transferred successfully' });
-  } catch (error) {
-    console.error('Error transferring items:', error);
-    res.status(500).json({ message: 'Error transferring items' });
-  }
-});
+  });
 
 // Get orders for a specific seller
 router.get('/', async (req, res) => {
