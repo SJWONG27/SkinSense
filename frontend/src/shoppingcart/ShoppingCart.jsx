@@ -173,7 +173,7 @@ const ShoppingCart = () => {
               
               <img src={product.image.replace('../frontend/', '')} alt={product.name} style={{ width: '100px', height: '100px' }} />
               <div className='productCartContainer2'>
-                {product.name} - ${product.price} 
+                {product.name} - RM{product.price} 
                 <label>
                   Quantity:
                   <input 

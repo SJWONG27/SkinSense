@@ -66,4 +66,20 @@ router.patch('/:orderId', async (req, res) => {
   }
 });
 
+
+// Get orders for a specific user to allow review for products ordered
+router.get('/:userID/:productID', async (req, res) => {
+  const userId  = req.params.userID
+  try {
+    // Fetch orders for the specified user
+    const orders = await Order.find({ userId });
+    //console.log('Fetched orders:', orders);
+
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ message: 'Error fetching orders' });
+  }
+});
+
 module.exports = router;
