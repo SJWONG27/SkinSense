@@ -134,7 +134,7 @@ const MyProduct = () => {
           <div className='product-detail'>
             <h3>{product.name}</h3>
             <p>Description: {product.description}</p>
-            <p>Price: ${product.price}</p>
+            <p>Price: RM{product.price}</p>
             <p>Quantity: {product.quantity}</p>
             {product.isEditing ? (
               <div>

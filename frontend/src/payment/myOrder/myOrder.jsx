@@ -54,12 +54,12 @@ function MyOrder() {
         <table>
           <thead>
             <tr>
+              <th>Order ID</th>
               <th>Item</th>
               <th>Created At</th>
               <th>Price</th>
               <th>Quantity</th>
               <th>Total Price</th>
-              <th>Payment Method</th>
               <th>Delivery Status</th>
             </tr>
           </thead>
@@ -67,16 +67,12 @@ function MyOrder() {
             {orders.length > 0 ? (
               orders.map(order => (
                 <tr key={order._id}>
+                  <td>{order._id}</td>
                   <td>{order.name}</td>
                   <td>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</td>
-                  <td>${order.price ? order.price.toFixed(2) : '0.00'}</td>
+                  <td>RM{order.price ? order.price.toFixed(2) : '0.00'}</td>
                   <td>{order.quantity || '0'}</td>
-                  <td>${(order.price * order.quantity).toFixed(2)}</td>
-                  <td>
-                    <span className={`payment-method ${order.paymentMethod ? order.paymentMethod.toLowerCase() : 'unknown'}`}>
-                      {order.paymentMethod || 'N/A'}
-                    </span>
-                  </td>
+                  <td>RM{(order.price * order.quantity).toFixed(2)}</td>
                   <td>
                     <span className={`status ${order.deliveryStatus ? order.deliveryStatus.toLowerCase() : 'processing'}`}>
                       {order.deliveryStatus || 'Processing'}
