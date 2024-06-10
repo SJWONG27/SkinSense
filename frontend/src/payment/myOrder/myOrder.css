@@ -1,5 +1,3 @@
-
-
 /* Container for the MyOrder component */
 .MyOrder {
   padding: 20px;
@@ -7,11 +5,11 @@
   margin: 0 auto;
 }
 
-.ordertable {
+.MyOrder .ordertable {
   overflow-x: auto;
 }
 
-table {
+.MyOrder table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
@@ -19,34 +17,37 @@ table {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-table thead {
+.MyOrder table thead {
   background-color: #f2f2f2;
 }
 
-table th, table td {
+.MyOrder table th,
+.MyOrder table td {
   padding: 15px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
-table th {
+.MyOrder table th {
   background-color: #f2f2f2;
   font-weight: 500;
 }
 
-table tr:hover {
+.MyOrder table tr:hover {
   background-color: #f9f9f9;
 }
 
-table th:first-child, table td:first-child {
+.MyOrder table th:first-child,
+.MyOrder table td:first-child {
   padding-left: 20px;
 }
 
-table th:last-child, table td:last-child {
+.MyOrder table th:last-child,
+.MyOrder table td:last-child {
   padding-right: 20px;
 }
 
-img {
+.MyOrder img {
   border-radius: 4px;
   display: block;
   margin: 0 auto;
@@ -54,7 +55,7 @@ img {
   height: auto;
 }
 
-.payment-method {
+.MyOrder .payment-method {
   padding: 5px 10px;
   border-radius: 3px;
   color: #fff;
@@ -62,26 +63,26 @@ img {
   text-transform: capitalize;
 }
 
-.payment-method.card {
+.MyOrder .payment-method.card {
   background-color: #007bff;
 }
 
-.payment-method.cash {
+.MyOrder .payment-method.cash {
   background-color: #000;
 }
 
-.status {
+.MyOrder .status {
   padding: 5px 10px;
   border-radius: 3px;
   font-size: 0.9rem;
 }
 
-.status.yes {
+.MyOrder .status.yes {
   background-color: #28a745;
   color: #fff;
 }
 
-.status.no {
+.MyOrder .status.no {
   background-color: #dc3545;
   color: #fff;
 }
