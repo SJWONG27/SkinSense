@@ -105,6 +105,26 @@ function ViewProduct(){
     setState({ ...state, open: false });
   };
 
+   // to set whether this product has been ordered by this user
+   const [isOrdered, setIsOrdered] = useState(false)
+
+   // to get products ordered
+   useEffect(()=>{ 
+     async function getOrders() {
+       const userID = JSON.parse(localStorage.getItem('id'));
+       const response = await fetch(`http://localhost:4000/orders/${userID}/${params.id}`);
+       const result = await response.json();
+       console.log(result)
+       for(const order of result){
+         if(order.itemId == params.id){
+           setIsOrdered(true)
+         }
+       }
+     }
+     getOrders();
+     return;
+   }, [])
+
     const location = useLocation();
     const data = location.state;
 
@@ -205,10 +225,8 @@ function ViewProduct(){
       setOpenDialog(false); // Close the dialog after submission
       addCommentsFunc();
     };
-    
 
-  
-    
+  if(isOrdered){
     // ascending review list
     if(sort=="star-asc"){
       const tempReviews = [...comments]
@@ -650,6 +668,452 @@ function ViewProduct(){
         </>
       ); 
     }  
+  }
+
+  // NOT ORDERED, NO REVIEW BUTTON
+  else{
+    // ascending review list
+    if(sort=="star-asc"){
+      const tempReviews = [...comments]
+      const sortedReviews = sortReviewsByStarAsc(tempReviews); // Sort before rendering
+
+      return (
+        <>
+        <NavBar/>
+        <div className="view_product_page">
+        <br/><br/><br/><br/>
+        <img src={data.image1} alt="sss" width={400} height={400}/>
+        <p className="product_name">{data.name2}</p>
+        <p className="product_description"><strong>Description</strong><br/>{data.description1}</p>
+        <p className="product_price">RM{data.price2}</p>
+        <Button onClick={handleClick({ vertical: 'bottom', horizontal: 'right' })} variant="contained">Add to Cart</Button>
+         
+        <Snackbar
+        open={open}
+        anchorOrigin={{ vertical, horizontal }}
+        autoHideDuration={1500}
+        onClose={handleClose}>
+          <Alert
+            severity="success"
+            variant="filled"
+            >
+            Successfully added to cart
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+        open={openSnackbar}
+        anchorOrigin={{ vertical:"bottom", horizontal:"right" }}
+        autoHideDuration={1500}
+        onClose={handleSnackbarClose}>
+          <Alert
+            severity="error"
+            variant="filled"
+            >
+            Please enter at least 5 characters
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+        open={reviewSnackbar}
+        anchorOrigin={{ vertical:"bottom", horizontal:"right" }}
+        autoHideDuration={1500}
+        onClose={handleReviewSnackbarClose}>
+          <Alert
+            severity="success"
+            variant="filled"
+            >
+            Review added
+          </Alert>
+        </Snackbar>
+
+        <br/><br/><br/><br/><br/><br/><br/><br/><hr className="review_separator_line"/>
+          <div className="review_section">
+            <h2>Review 
+              <FormControl className="sort_review_field" sx={{ m: 1, minWidth: 190}} size="small" >
+              <InputLabel>Sort by</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                label="Sort By"
+                value={sort}
+                onChange={handleSort}
+                >
+                <MenuItem value={"default"}>Default</MenuItem>
+                <MenuItem value={"star-asc"}>Rating Low to High</MenuItem>
+                <MenuItem value={"star-desc"}>Rating High to Low</MenuItem>
+                <MenuItem value={"date-desc"}>Latest to Oldest</MenuItem>
+              </Select>
+              </FormControl>
+
+            <div className='review_dialog'>
+                  {/* <Button color="error" variant="contained" onClick={handleClickOpen}>
+                        Add Review
+                  </Button> */}
+                  <Dialog open={openDialog} >
+                      <DialogTitle>Review Form</DialogTitle>
+                      <DialogContent>
+                      <DialogContentText>Please enter your review.</DialogContentText>
+                      <Rating
+                        name="simple-controlled"
+                        value={star}
+                        onChange={(event, newStar) => {
+                          setStar(newStar);
+                        }}
+                      />
+                        <br/>
+                        <textarea className="review_textarea" cols={30} rows={5} value={review} onChange={(e)=>setReview(e.target.value)}></textarea>
+                        <br/>
+                      </DialogContent>
+                      <DialogActions>
+                      <Button color="error" onClick={handleCloseDialog} variant="outlined" >Cancel</Button>
+                      <Button variant="contained" onClick={handleSubmit}>
+                              Submit
+                      </Button>
+                      </DialogActions>
+                    </Dialog>
+              </div>
+              </h2>
+              {sortedReviews.map((review) => (
+              <Review key={review.date} username={review.username}  content={review.content} star={review.star} date={review.date.slice(0,10)}/>
+               ))}
+          </div>
+        </div>
+        </>
+      ); 
+    }   
+
+    // descending review list
+    else if(sort=="star-desc"){
+      const tempReviews = [...comments]
+      const sortedReviews = sortReviewsByStarDesc(tempReviews); // Sort before rendering
+      return (
+        <>
+        <NavBar/>
+        <div className="view_product_page">
+        <br/><br/><br/><br/>
+        <img src={data.image1} alt="sss" width={400} height={400}/>
+        <p className="product_name">{data.name2}</p>
+        <p className="product_description"><strong>Description</strong><br/>{data.description1}</p>
+        <p className="product_price">RM{data.price2}</p>
+        <Button onClick={handleClick({ vertical: 'bottom', horizontal: 'right' })} variant="contained">Add to Cart</Button>
+         
+        <Snackbar
+        open={open}
+        anchorOrigin={{ vertical, horizontal }}
+        autoHideDuration={1500}
+        onClose={handleClose}>
+          <Alert
+            severity="success"
+            variant="filled"
+            >
+            Successfully added to cart
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+        open={openSnackbar}
+        anchorOrigin={{ vertical:"bottom", horizontal:"right" }}
+        autoHideDuration={1500}
+        onClose={handleSnackbarClose}>
+          <Alert
+            severity="error"
+            variant="filled"
+            >
+            Please enter at least 5 characters
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+        open={reviewSnackbar}
+        anchorOrigin={{ vertical:"bottom", horizontal:"right" }}
+        autoHideDuration={1500}
+        onClose={handleReviewSnackbarClose}>
+          <Alert
+            severity="success"
+            variant="filled"
+            >
+            Review added
+          </Alert>
+        </Snackbar>
+
+        <br/><br/><br/><br/><br/><br/><br/><br/><hr className="review_separator_line"/>
+          <div className="review_section">
+            <h2>Review 
+              <FormControl className="sort_review_field" sx={{ m: 1, minWidth: 190}} size="small" >
+              <InputLabel>Sort by</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                label="Sort By"
+                value={sort}
+                onChange={handleSort}
+                >
+                <MenuItem value={"default"}>Default</MenuItem>
+                <MenuItem value={"star-asc"}>Rating Low to High</MenuItem>
+                <MenuItem value={"star-desc"}>Rating High to Low</MenuItem>
+                <MenuItem value={"date-desc"}>Latest to Oldest</MenuItem>
+
+              </Select>
+              </FormControl>
+
+            <div className='review_dialog'>
+                  {/* <Button color="error" variant="contained" onClick={handleClickOpen}>
+                        Add Review
+                  </Button> */}
+                  <Dialog open={openDialog} >
+                      <DialogTitle>Review Form</DialogTitle>
+                      <DialogContent>
+                      <DialogContentText>Please enter your review.</DialogContentText>
+                      <Rating
+                        name="simple-controlled"
+                        value={star}
+                        onChange={(event, newStar) => {
+                          setStar(newStar);
+                        }}
+                      />
+                        <br/>
+                        <textarea className="review_textarea" cols={30} rows={5} value={review} onChange={(e)=>setReview(e.target.value)}></textarea>
+                        <br/>
+                      </DialogContent>
+                      <DialogActions>
+                      <Button color="error" onClick={handleCloseDialog} variant="outlined" >Cancel</Button>
+                      <Button variant="contained" onClick={handleSubmit}>
+                              Submit
+                      </Button>
+                      </DialogActions>
+                    </Dialog>
+              </div>
+              </h2>
+              {sortedReviews.map((review) => (
+              <Review key={review.date} username={review.username} content={review.content} star={review.star} date={review.date.slice(0,10)}/>
+               ))}
+          </div>
+        </div>
+        </>
+      ); 
+    }  
+
+    // from latest to oldest date
+    else if(sort=="date-desc"){
+      const tempReviews = [...comments]
+      const sortedReviews = sortReviewsByDateDesc(tempReviews); // Sort before rendering
+      return (
+        <>
+        <NavBar/>
+        <div className="view_product_page">
+        <br/><br/><br/><br/>
+        <img src={data.image1} alt="sss" width={400} height={400}/>
+        <p className="product_name">{data.name2}</p>
+        <p className="product_description"><strong>Description</strong><br/>{data.description1}</p>
+        <p className="product_price">RM{data.price2}</p>
+        <Button onClick={handleClick({ vertical: 'bottom', horizontal: 'right' })} variant="contained">Add to Cart</Button>
+         
+        <Snackbar
+        open={open}
+        anchorOrigin={{ vertical, horizontal }}
+        autoHideDuration={1500}
+        onClose={handleClose}>
+          <Alert
+            severity="success"
+            variant="filled"
+            >
+            Successfully added to cart
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+        open={openSnackbar}
+        anchorOrigin={{ vertical:"bottom", horizontal:"right" }}
+        autoHideDuration={1500}
+        onClose={handleSnackbarClose}>
+          <Alert
+            severity="error"
+            variant="filled"
+            >
+            Please enter at least 5 characters
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+        open={reviewSnackbar}
+        anchorOrigin={{ vertical:"bottom", horizontal:"right" }}
+        autoHideDuration={1500}
+        onClose={handleReviewSnackbarClose}>
+          <Alert
+            severity="success"
+            variant="filled"
+            >
+            Review added
+          </Alert>
+        </Snackbar>
+
+        <br/><br/><br/><br/><br/><br/><br/><br/><hr className="review_separator_line"/>
+          <div className="review_section">
+            <h2>Review 
+              <FormControl className="sort_review_field" sx={{ m: 1, minWidth: 190}} size="small" >
+              <InputLabel>Sort by</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                label="Sort By"
+                value={sort}
+                onChange={handleSort}
+                >
+                <MenuItem value={"default"}>Default</MenuItem>
+                <MenuItem value={"star-asc"}>Rating Low to High</MenuItem>
+                <MenuItem value={"star-desc"}>Rating High to Low</MenuItem>
+                <MenuItem value={"date-desc"}>Latest to Oldest</MenuItem>
+
+              </Select>
+              </FormControl>
+
+            <div className='review_dialog'>
+                  {/* <Button color="error" variant="contained" onClick={handleClickOpen}>
+                        Add Review
+                  </Button> */}
+                  <Dialog open={openDialog} >
+                      <DialogTitle>Review Form</DialogTitle>
+                      <DialogContent>
+                      <DialogContentText>Please enter your review.</DialogContentText>
+                      <Rating
+                        name="simple-controlled"
+                        value={star}
+                        onChange={(event, newStar) => {
+                          setStar(newStar);
+                        }}
+                      />
+                        <br/>
+                        <textarea className="review_textarea" cols={30} rows={5} value={review} onChange={(e)=>setReview(e.target.value)}></textarea>
+                        <br/>
+                      </DialogContent>
+                      <DialogActions>
+                      <Button color="error" onClick={handleCloseDialog} variant="outlined" >Cancel</Button>
+                      <Button variant="contained" onClick={handleSubmit}>
+                              Submit
+                      </Button>
+                      </DialogActions>
+                    </Dialog>
+              </div>
+              </h2>
+              {sortedReviews.map((review) => (
+              <Review key={review.date} username={review.username}  content={review.content} star={review.star} date={review.date.slice(0,10)}/>
+               ))}
+          </div>
+        </div>
+        </>
+      ); 
+    }  
+
+    // default review list
+    else{
+      return (
+        <>
+        <NavBar/>
+        <div className="view_product_page">
+        <br/><br/><br/><br/>
+        <img src={data.image1} alt="sss" width={400} height={400}/>
+        <p className="product_name">{data.name2}</p>
+        <p className="product_description"><strong>Description</strong><br/>{data.description1}</p>
+        <p className="product_price">RM{data.price2}</p>
+        <Button onClick={handleClick({ vertical: 'bottom', horizontal: 'right' })} variant="contained">Add to Cart</Button>
+         
+        <Snackbar
+        open={open}
+        anchorOrigin={{ vertical, horizontal }}
+        autoHideDuration={1500}
+        onClose={handleClose}>
+          <Alert
+            severity="success"
+            variant="filled"
+            >
+            Successfully added to cart
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+        open={openSnackbar}
+        anchorOrigin={{ vertical:"bottom", horizontal:"right" }}
+        autoHideDuration={1500}
+        onClose={handleSnackbarClose}>
+          <Alert
+            severity="error"
+            variant="filled"
+            >
+            Please enter at least 5 characters
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+        open={reviewSnackbar}
+        anchorOrigin={{ vertical:"bottom", horizontal:"right" }}
+        autoHideDuration={1500}
+        onClose={handleReviewSnackbarClose}>
+          <Alert
+            severity="success"
+            variant="filled"
+            >
+            Review added
+          </Alert>
+        </Snackbar>
+
+        <br/><br/><br/><br/><br/><br/><br/><br/><hr className="review_separator_line"/>
+        <div className="review_section">
+            <h2>Review 
+              <FormControl className="sort_review_field" sx={{ m: 1, minWidth: 190}} size="small" >
+              <InputLabel>Sort by</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                label="Sort By"
+                value={sort}
+                onChange={handleSort}
+                >
+                <MenuItem value={"default"}>Default</MenuItem>
+                <MenuItem value={"star-asc"}>Rating Low to High</MenuItem>
+                <MenuItem value={"star-desc"}>Rating High to Low</MenuItem>
+                <MenuItem value={"date-desc"}>Latest to Oldest</MenuItem>
+
+              </Select>
+              </FormControl>
+
+            <div className='review_dialog'>
+                  {/* <Button color="error" variant="contained" onClick={handleClickOpen}>
+                        Add Review
+                  </Button> */}
+                  <Dialog open={openDialog} >
+                      <DialogTitle>Review Form</DialogTitle>
+                      <DialogContent>
+                      <DialogContentText>Please enter your review.</DialogContentText>
+                      <Rating
+                        name="simple-controlled"
+                        value={star}
+                        onChange={(event, newStar) => {
+                          setStar(newStar);
+                        }}
+                      />
+                        <br/>
+                        <textarea className="review_textarea" cols={30} rows={5} value={review} onChange={(e)=>setReview(e.target.value)}></textarea>
+                        <br/>
+                      </DialogContent>
+                      <DialogActions>
+                      <Button color="error" onClick={handleCloseDialog} variant="outlined" >Cancel</Button>
+                      <Button variant="contained" onClick={handleSubmit}>
+                              Submit
+                      </Button>
+                      </DialogActions>
+                    </Dialog>
+              </div>
+              </h2>
+              {/* {submittedReviews.map((review) => (
+              <Review key={review.date} username={review.username} content={review.content} star={review.star} date={review.date} />
+               ))} */}
+            {comments.length>0 && comments.map((review) => (
+                <Review key={review.date} username={review.username} content={review.content} star={review.star} date={review.date.slice(0,10)} />
+              ))}
+          </div>
+
+        </div>
+        </>
+      ); 
+    } 
+  }
 
       function handleSort(event){
           setSort(event.target.value)
