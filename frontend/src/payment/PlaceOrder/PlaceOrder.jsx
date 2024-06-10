@@ -30,7 +30,7 @@ const PlaceOrder = () => {
     const [discount, setDiscount] = useState(0);
     const navigate = useNavigate();
     const [showSuccessSnackbar, setShowSuccessSnackbar] = useState(false);
-
+    const userId = localStorage.getItem('userId');
 
 
     // Retrieve the subtotal from location state
@@ -108,6 +108,38 @@ const PlaceOrder = () => {
         setShowSuccessMessage(true); 
     };
 
+    const handlePlaceOrder = async () => {
+        const deliveryInfo = {
+            firstName,
+            lastName,
+            email,
+            street,
+            city,
+            state,
+            zipCode,
+            country,
+            phone
+        };
+    
+        const orderData = {
+            userId: userId.replace(/"/g, ''),  
+            cartItems: cartItems.map(item => ({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                image: item.image,
+                id: item.id
+            })),
+            paymentMethod: paymentMethod,
+            deliveryInfo: deliveryInfo 
+        };
+    
+        try {
+            await axios.post('http://localhost:4000/orders', orderData); 
+        } catch (error) {
+            console.error('Error placing order:', error);
+        }
+    };
     const navigateToStripeCheckout = async () => {
 
         const stripe = await stripePromise;
@@ -142,42 +174,6 @@ const PlaceOrder = () => {
         }
     };
 
-    const handlePlaceOrder = async () => {
-        const deliveryInfo = {
-            firstName,
-            lastName,
-            email,
-            street,
-            city,
-            state,
-            zipCode,
-            country,
-            phone
-        };
-    
-        const orderData = {
-            userId: 'exampleUserId', // Replace with the actual user ID
-            cartItems: cartItems.map(item => ({
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity,
-                image: item.image,
-                id: item.id
-            })),
-            paymentMethod: paymentMethod
-        };
-    
-        try {
-            await axios.post('http://localhost:4000/orders', orderData);
-            setShowSuccessSnackbar(true);
-            setTimeout(() => {
-                setShowSuccessSnackbar(false);
-                navigate('/transaction/Success');
-            }, 3000); // Adjust the duration as needed (in milliseconds)
-        } catch (error) {
-            console.error('Error placing order:', error);
-        }
-    };
     const handlePlaceOrderCashOnDelivery = () => {
         // Your logic for placing the order with cash on delivery goes here
         
@@ -255,9 +251,12 @@ const PlaceOrder = () => {
                 {phone.trim() === '' && <p className="error-message">**</p>}
                 <input type="text" placeholder='Phone' value={phone} onChange={(e) => setPhone(e.target.value)} />
                 <div className="save-button-container">
-                    <button className='save-button' type="submit">{isSaved ? "Saved" : "Save"}</button>
-                    {showSuccessMessage && <p className="success-message">Saved successfully!</p>}
-                </div>
+    <button className='save-button' type="submit" onClick={handlePlaceOrder}>
+        {isSaved ? "Saved" : "Save"}
+    </button>
+    {showSuccessMessage && <p className="success-message">Saved successfully!</p>}
+</div>
+
             </div>
             <div className="place-order-right">
             <p className="title">Payment Method</p>
@@ -277,7 +276,7 @@ const PlaceOrder = () => {
                                 value="cash"
                                 checked={paymentMethod === 'cash'}
                                 onChange={() => setPaymentMethod('cash')}
-                                onClick={handlePlaceOrder}
+
                             />
                             Cash on delivery
                         </label>
@@ -288,7 +287,6 @@ const PlaceOrder = () => {
                                 value="card"
                                 checked={paymentMethod === 'card'}
                                 onChange={() => setPaymentMethod('card')}
-                                onClick={handlePlaceOrder}
                             />
                             Credit Card
                         </label>
