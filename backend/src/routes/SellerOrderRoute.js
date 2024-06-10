@@ -57,6 +57,22 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/user', async (req, res) => {
+  const { userId } = req.query;
+  console.log('Received userId:', userId);
+
+  try {
+    // Fetch orders for the specified userId
+    const orders = await SellerOrder.find({ userId });
+    console.log('Fetched orders for user:', orders);
+
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error('Error fetching orders for user:', error);
+    res.status(500).json({ message: 'Error fetching orders for user' });
+  }
+});
+
 router.patch('/:orderId', async (req, res) => {
     const { orderId } = req.params;
     const { deliveryStatus } = req.body;

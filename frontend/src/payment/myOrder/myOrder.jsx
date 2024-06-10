@@ -8,7 +8,7 @@ function MyOrder() {
   const { user } = useContext(UserContext); // Get the logged-in user's info
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchOrdersAndStatus = async () => {
       const userId = JSON.parse(localStorage.getItem("userId"));
       if (!userId) {
         console.error('User ID is missing');
@@ -16,16 +16,33 @@ function MyOrder() {
       }
 
       try {
-        console.log('Fetching orders for user:', userId);
-        const response = await axios.get(`http://localhost:4000/orders?userId=${userId}`);
-        console.log('Fetched orders:', response.data);
-        setOrders(response.data);
+        // Fetch orders and all seller orders in parallel
+        const [ordersResponse, sellerOrdersResponse] = await Promise.all([
+          axios.get(`http://localhost:4000/orders?userId=${userId}`),
+          axios.get(`http://localhost:4000/sellerorders/user?userId=${userId}`)
+        ]);
+
+        const orders = ordersResponse.data;
+        const sellerOrders = sellerOrdersResponse.data;
+
+        // Merge the delivery status from seller orders into the orders
+        const ordersWithStatus = orders.map(order => {
+          // Find matching seller order based on itemId and sellerID
+          const matchingSellerOrder = sellerOrders.find(sellerOrder => sellerOrder.itemId === order.itemId && sellerOrder.userId === userId);
+          return {
+            ...order,
+            deliveryStatus: matchingSellerOrder ? matchingSellerOrder.deliveryStatus : order.deliveryStatus
+          };
+        });
+
+        console.log('Fetched orders with merged status:', ordersWithStatus);
+        setOrders(ordersWithStatus);
       } catch (error) {
-        console.error('Error fetching orders:', error);
+        console.error('Error fetching orders or status:', error);
       }
     };
 
-    fetchOrders();
+    fetchOrdersAndStatus();
   }, [user]);
 
   return (
@@ -43,14 +60,14 @@ function MyOrder() {
               <th>Quantity</th>
               <th>Total Price</th>
               <th>Payment Method</th>
-              <th>Delivered</th>
+              <th>Delivery Status</th>
             </tr>
           </thead>
           <tbody>
             {orders.length > 0 ? (
               orders.map(order => (
                 <tr key={order._id}>
-                  <td>{order.itemName}</td>
+                  <td>{order.name}</td>
                   <td>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</td>
                   <td>${order.price ? order.price.toFixed(2) : '0.00'}</td>
                   <td>{order.quantity || '0'}</td>
@@ -61,8 +78,8 @@ function MyOrder() {
                     </span>
                   </td>
                   <td>
-                    <span className={`status ${order.delivered ? 'yes' : 'no'}`}>
-                      {order.delivered ? 'Yes' : 'No'}
+                    <span className={`status ${order.deliveryStatus ? order.deliveryStatus.toLowerCase() : 'processing'}`}>
+                      {order.deliveryStatus || 'Processing'}
                     </span>
                   </td>
                 </tr>
