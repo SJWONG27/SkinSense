@@ -5,6 +5,11 @@ import ShoppingCart from "@mui/icons-material/ShoppingCart";
 import { UserContext } from "./general/UserContext";
 import { useContext } from "react";
 
+const getImgUrl = (imgPath) => {
+    const adjustedPath = imgPath.replace('/frontend/src/uploads/', '/src/uploads/');
+    return `/${adjustedPath}`;
+}
+
 function NavBar(){
     const { user } = useContext(UserContext);
 
@@ -23,7 +28,7 @@ function NavBar(){
                 </Link>
                 {user && (
                   <Link to="/profilePage" className='link'>
-                      <Avatar photo={user.profilePic} name={user.username}/>
+                      <Avatar photo={getImgUrl(user.profilePic)} name={user.username}/>
                   </Link>
                 )}
             </div>
