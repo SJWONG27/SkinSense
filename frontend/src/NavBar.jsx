@@ -6,6 +6,9 @@ import { UserContext } from "./general/UserContext";
 import { useContext } from "react";
 
 const getImgUrl = (imgPath) => {
+    if(typeof imgPath !== 'string'){
+        return avatarUser;
+    }
     const adjustedPath = imgPath.replace('/frontend/src/uploads/', '/src/uploads/');
     return `/${adjustedPath}`;
 }
