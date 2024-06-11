@@ -86,3 +86,16 @@
   background-color: #dc3545;
   color: #fff;
 }
+.remove-btn {
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.remove-btn:hover .fa-trash-alt {
+  color: red; /* Change to your desired color */
+}
+
+/* Add this CSS to ensure the icon color changes even if it's not hovered directly */
+.remove-btn:hover svg {
+  color: red; /* Change to your desired color */
+}

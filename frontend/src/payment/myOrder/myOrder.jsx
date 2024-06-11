@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../../general/UserContext';
 import axios from 'axios';
 import './myOrder.css'; // Import the CSS file
+import { FaTrashAlt } from 'react-icons/fa';
 
 function MyOrder() {
   const [orders, setOrders] = useState([]);
@@ -45,6 +46,18 @@ function MyOrder() {
     fetchOrdersAndStatus();
   }, [user]);
 
+  const handleRemoveOrder = async (orderId) => {
+    const userConfirmed = window.confirm("Are you sure you want to remove this order?");
+    if (!userConfirmed) return;
+
+    try {
+      await axios.delete(`http://localhost:4000/orders/${orderId}`);
+      setOrders(orders.filter(order => order._id !== orderId));
+    } catch (error) {
+      console.error('Error removing order:', error);
+    }
+  };
+
   return (
     <div className='MyOrder'>
       <header className='header'>
@@ -61,6 +74,9 @@ function MyOrder() {
               <th>Quantity</th>
               <th>Total Price</th>
               <th>Delivery Status</th>
+              <th>Payment Method</th>
+              <th>Address</th> 
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -78,11 +94,22 @@ function MyOrder() {
                       {order.deliveryStatus || 'Processing'}
                     </span>
                   </td>
+                  <td>{order.paymentMethod || 'N/A'}</td>
+                  <td>
+                    {order.deliveryInfo
+                      ? `${order.deliveryInfo.street}, ${order.deliveryInfo.city}, ${order.deliveryInfo.state}, ${order.deliveryInfo.zipCode}, ${order.deliveryInfo.country}`
+                      : 'N/A'}
+                  </td>
+                  <td>
+                    <button className='remove-btn' onClick={() => handleRemoveOrder(order._id)}>
+                      <FaTrashAlt />
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="7">No orders found.</td>
+                <td colSpan="10">No orders found.</td>
               </tr>
             )}
           </tbody>

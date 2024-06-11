@@ -11,6 +11,17 @@ const orderSchema = new mongoose.Schema({
         type: String,
         default: 'Processing',
     },
+    deliveryInfo: {
+        firstName: String,
+        lastName: String,
+        email: String,
+        street: String,
+        city: String,
+        state: String,
+        zipCode: String,
+        country: String,
+        phone: String
+    },
     paymentMethod: String,
     createdAt: {
         type: Date,

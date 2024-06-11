@@ -8,33 +8,18 @@ const router = express.Router();
 router.use(express.json());
 
 router.post("/create-checkout-session", async (req, res) => {
-  const { cartItems, userId, couponCode } = req.body; // Add couponCode to request body
+  const { cartItems, userId } = req.body;
 
   if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
     console.error("Cart items are required and should be an array.");
     return res.status(400).send({ error: "Cart items are required and should be an array." });
   }
 
-  // Sample coupon data
-  const coupons = [
-    { code: "EXAMPLE", discountPercentage: 10 },
-    // Add more coupon codes here if needed
-  ];
-
   try {
     // Calculate subtotal
     const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.cartQuantity, 0);
 
-    // Apply coupon if couponCode is provided
-    let discountedTotal = subtotal;
-    if (couponCode) {
-      const coupon = coupons.find((coupon) => coupon.code === couponCode);
-      if (coupon) {
-        const discountAmount = (subtotal * coupon.discountPercentage) / 100;
-        discountedTotal = subtotal - discountAmount;
-      }
-    }
-
+    // Create a customer on Stripe
     const customer = await stripe.customers.create({
       metadata: {
         userId,
@@ -42,6 +27,7 @@ router.post("/create-checkout-session", async (req, res) => {
       },
     });
 
+    // Create line items for the checkout session
     const line_items = cartItems.map((item) => {
       const imageUrl = item.image && item.image.startsWith('http') ? item.image : 'https://via.placeholder.com/150'; // Placeholder image
 
@@ -61,20 +47,7 @@ router.post("/create-checkout-session", async (req, res) => {
       };
     });
 
-    // Apply discount directly in the line items
-    if (couponCode) {
-      line_items.push({
-        price_data: {
-          currency: "myr",
-          product_data: {
-            name: "Discount", // Name for the discount line item
-          },
-          unit_amount: -discountedTotal * 100, // Negative amount for discount
-        },
-        quantity: 1, // Quantity of 1 for the discount line item
-      });
-    }
-
+    // Create the checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items,
@@ -126,9 +99,30 @@ router.post("/create-checkout-session", async (req, res) => {
       ],
     });
 
-    res.send({ sessionId: session.id, discountedTotal });
+    // Send the session ID to the client
+    res.send({ sessionId: session.id });
   } catch (error) {
     console.error("Error creating checkout session:", error.message);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+});
+
+// Route for handling successful payments
+router.post("/payment/success", async (req, res) => {
+  const { payment_method, customer } = req.body;
+
+  try {
+    // Attach the payment method to the customer
+    const attachedPaymentMethod = await stripe.paymentMethods.attach(payment_method, {
+      customer,
+    });
+
+    // Optionally, save the payment method ID or customer ID to your database
+    // This allows you to charge the customer again in the future without collecting payment details again
+
+    res.status(200).send("Payment method attached successfully.");
+  } catch (error) {
+    console.error("Error attaching payment method to customer:", error.message);
     res.status(500).send({ error: "Internal Server Error" });
   }
 });
