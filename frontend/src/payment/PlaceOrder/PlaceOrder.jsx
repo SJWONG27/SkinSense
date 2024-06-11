@@ -109,42 +109,47 @@ const PlaceOrder = () => {
     };
 
     const handlePlaceOrder = async () => {
-        const deliveryInfo = {
-            firstName,
-            lastName,
-            email,
-            street,
-            city,
-            state,
-            zipCode,
-            country,
-            phone
-        };
-    
-        const orderData = {
-            userId: userId.replace(/"/g, ''),  
-            cartItems: cartItems.map(item => ({
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity,
-                image: item.image,
-                id: item.id
-            })),
-            paymentMethod: paymentMethod,
-            deliveryInfo: deliveryInfo 
-        };
-    
         try {
-            await axios.post('http://localhost:4000/orders', orderData); 
+            if (!Array.isArray(cartItems) || cartItems.length === 0) {
+                throw new Error('Cart items are missing or invalid');
+            }
+    
+            const deliveryInfo = {
+                firstName,
+                lastName,
+                email,
+                street,
+                city,
+                state,
+                zipCode,
+                country,
+                phone
+            };
+    
+            const orderData = {
+                userId: userId.replace(/"/g, ''),  // Remove quotes if necessary
+                items: cartItems.map(item => ({   // Change `cartItems` to `items`
+                    itemId: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    img: item.image
+                })),
+                paymentMethod: paymentMethod,
+                deliveryInfo: deliveryInfo
+            };
+    
+            await axios.post('http://localhost:4000/orders', orderData);
         } catch (error) {
             console.error('Error placing order:', error);
         }
     };
-    const navigateToStripeCheckout = async () => {
 
+    const navigateToStripeCheckout = async () => {
         const stripe = await stripePromise;
 
         try {
+            // Include coupon code if provided
             const requestData = {
                 userId: 'exampleUserId',
                 cartItems: cartItems.map(item => ({
@@ -156,7 +161,6 @@ const PlaceOrder = () => {
                 }))
             };
 
-            // Include coupon code if provided
             if (promoCode) {
                 requestData.couponCode = promoCode;
             }
@@ -185,41 +189,6 @@ const PlaceOrder = () => {
             setShowSuccessSnackbar(false);
             navigate('/transaction/Success');
         }, 3000); // Adjust the duration as needed (in milliseconds)
-    };
-
-    const validateForm = () => {
-        return (
-            firstName.trim() !== '' &&
-            lastName.trim() !== '' &&
-            email.trim() !== '' &&
-            street.trim() !== '' &&
-            city.trim() !== '' &&
-            state.trim() !== '' &&
-            zipCode.trim() !== '' &&
-            country.trim() !== '' &&
-            phone.trim() !== ''
-        );
-    };
-
-    const handlePromoCodeSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            // Make an API request to your backend to validate and apply the promo code
-            const response = await axios.post('http://localhost:4000/api/apply-promo-code', {
-                promoCode: promoCode
-            });
-
-            // Assuming the response contains the discounted total amount
-            const { discountedTotal, discountAmount } = response.data;
-
-            // Update the UI with the discounted total amount and discount amount
-            setTotal(discountedTotal);
-            setDiscount(discountAmount);
-        } catch (error) {
-            console.error('Error applying promo code:', error.message);
-            // Handle any errors or display a message to the user
-        }
     };
 
     return (
