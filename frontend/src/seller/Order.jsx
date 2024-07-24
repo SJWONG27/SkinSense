@@ -57,8 +57,8 @@ function Order() {
           <thead>
             <tr>
               <th>Order ID</th>
-              <th>Customer</th>
-              <th>name</th>
+              <th>Customer ID</th>
+              <th>Product Name</th>
               <th>Status</th>
               <th>Action</th>
             </tr>

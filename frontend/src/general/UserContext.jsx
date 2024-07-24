@@ -21,7 +21,7 @@ const UserProvider = ({ children }) => {
               Authorization: `Bearer ${cookies.token}`,
             },
             withCredentials: true,
-          }
+          } 
         );
 
         const { status, user } = response.data;

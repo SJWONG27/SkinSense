@@ -1,21 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const Cart = require('../models/CartModel'); // Adjust the path according to your project structure
-const SellerOrder = require('../models/SellerOrderModel'); // Adjust the path according to your project structure
+const Cart = require('../models/CartModel'); 
+const SellerOrder = require('../models/SellerOrderModel'); 
 router.post('/', async (req, res) => {
     const { userId } = req.body;
     console.log(`Received userId for transfer: ${userId}`);
   
     try {
-      // Fetch items from the Cart model for the specified user
       const cart = await Cart.findOne({ userId });
   
       if (!cart) {
         console.log('Cart not found');
         return res.status(404).json({ message: 'Cart not found' });
       }
-  
-      // Transform items to match the SellerOrder schema
+
       const sellerOrders = cart.items.map(item => ({
         userId: cart.userId,
         itemId: item.itemId,
@@ -26,11 +24,7 @@ router.post('/', async (req, res) => {
       }));
   
       console.log('Transformed seller orders:', sellerOrders);
-  
-      // Insert the transformed data into the SellerOrder model
       await SellerOrder.insertMany(sellerOrders);
-  
-      // Optionally, clear the cart after transferring the items
       await Cart.updateOne({ userId }, { items: [] });
   
       res.status(200).json({ message: 'Items transferred successfully' });
@@ -56,7 +50,7 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Error fetching orders' });
   }
 });
-
+// Get orders for a specific user
 router.get('/user', async (req, res) => {
   const { userId } = req.query;
   console.log('Received userId:', userId);
